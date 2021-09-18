@@ -72,4 +72,7 @@ dependencies {
 
     // Google Play Services
     implementation 'com.google.android.gms:play-services-location:18.0.0' // For Transition API
+
+    // Permission
+    implementation 'io.github.ParkSangGwon:tedpermission-normal:3.2.3'
 }

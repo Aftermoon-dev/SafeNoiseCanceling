@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.safenoisecanceling
+package kr.ac.gachon.sw.safenoisecanceling.activity
 
 class MainPresenter: MainContract.Presenter {
     private var mView: MainContract.View? = null
