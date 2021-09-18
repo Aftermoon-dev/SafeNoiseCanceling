@@ -1,12 +1,20 @@
 package kr.ac.gachon.sw.safenoisecanceling
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.google.android.gms.common.GoogleApiAvailability
+import kr.ac.gachon.sw.safenoisecanceling.base.BaseActivity
+import kr.ac.gachon.sw.safenoisecanceling.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate), MainContract.View {
+    private lateinit var mPresenter: MainPresenter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
+
+    override fun initPresenter() {
+        mPresenter = MainPresenter()
+    }
 }
+
+
