@@ -1,13 +1,19 @@
 package kr.ac.gachon.sw.safenoisecanceling.activity
 
 import android.Manifest
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
 import kr.ac.gachon.sw.safenoisecanceling.R
 import kr.ac.gachon.sw.safenoisecanceling.base.BaseActivity
 import kr.ac.gachon.sw.safenoisecanceling.databinding.ActivityMainBinding
+import kr.ac.gachon.sw.safenoisecanceling.service.SoundClassificationService
+import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate),
     MainContract.View {
@@ -15,10 +21,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        mPresenter.createView(this)
 
         // 퍼미션 확인
         permissionCheck()
+
+        // 스위치 초기 값 설정
+        setServiceSwitch()
     }
 
     override fun initPresenter() {
@@ -32,20 +41,68 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private fun permissionCheck() {
         val permissionListener = object : PermissionListener {
             override fun onPermissionGranted() {
-                // 권한 허용했으므로 Pass
+                Log.d("MainActivity", "Permission Granted")
+                Intent(this@MainActivity, SoundClassificationService::class.java).also {
+                    if (ApplicationClass.SharedPreferences.isSNCEnable) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if (Utils.checkActivityRecognitionPermission(this@MainActivity)) startForegroundService(it)
+                        } else {
+                            startService(it)
+                        }
+                    }
+                }
             }
 
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                Log.d("MainActivity", "Permission Denied")
                 Toast.makeText(this@MainActivity, getString(R.string.permission_denied), Toast.LENGTH_LONG).show()
                 finish()
             }
         }
 
-        TedPermission.create()
+        val permission = TedPermission.create()
             .setPermissionListener(permissionListener)
+            .setRationaleMessage(R.string.permission_req_msg)
             .setDeniedMessage(R.string.permission_req_msg)
-            .setPermissions(Manifest.permission.RECORD_AUDIO, Manifest.permission.ACTIVITY_RECOGNITION)
-            .check()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            permission.setPermissions(Manifest.permission.RECORD_AUDIO, Manifest.permission.ACTIVITY_RECOGNITION)
+        }
+        else {
+            permission.setPermissions(Manifest.permission.RECORD_AUDIO)
+        }
+
+        permission.check()
+    }
+
+    /**
+     * 권한 및 ON/OFF 여부에 따른 Switch 초기 설정
+     * @author Minjae Seon
+     */
+    private fun setServiceSwitch() {
+        viewBinding.swcSncservice.isChecked = Utils.checkActivityRecognitionPermission(this) && ApplicationClass.SharedPreferences.isSNCEnable
+        ApplicationClass.SharedPreferences.isSNCEnable = viewBinding.swcSncservice.isChecked
+
+        viewBinding.swcSncservice.setOnCheckedChangeListener { buttonView, isChecked ->
+            Log.d("MainActivity", "SNCService Switch Changed $isChecked")
+
+            ApplicationClass.SharedPreferences.isSNCEnable = isChecked
+
+            if (isChecked) {
+                Intent(this, SoundClassificationService::class.java).also {
+                    if (ApplicationClass.SharedPreferences.isSNCEnable) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if (Utils.checkActivityRecognitionPermission(this)) startForegroundService(it)
+                        } else {
+                            startService(it)
+                        }
+                    }
+                }
+            }
+            else {
+                stopService(Intent(this, SoundClassificationService::class.java))
+            }
+        }
     }
 }
 

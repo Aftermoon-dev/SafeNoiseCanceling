@@ -20,4 +20,34 @@ object Utils {
         }
         return true
     }
+
+    /**
+     * Activity Number to String
+     * @author Minjae Seon
+     * @return 활동 번호를 String 형태로 변환
+     */
+    fun activityToString(activitynum: Int): String {
+        if (activitynum == 0) {
+            return "차량 안"
+        }
+        else if (activitynum == 1) {
+            return "자전거"
+        }
+        else if (activitynum == 2) {
+            return "도보 (걷기 or 뛰기)"
+        }
+        else if (activitynum == 3) {
+            return "가만히 있음"
+        }
+        else if (activitynum == 5) {
+            return "기기 기울어짐"
+        }
+        else if (activitynum == 7) {
+            return "걷기"
+        }
+        else if (activitynum == 8) {
+            return "뛰기"
+        }
+        return "알 수 없음"
+    }
 }
