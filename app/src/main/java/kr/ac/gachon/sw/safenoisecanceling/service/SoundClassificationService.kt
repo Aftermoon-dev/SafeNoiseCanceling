@@ -39,6 +39,7 @@ class SoundClassificationService: Service() {
     private lateinit var transitionReceiver: TransitionsReceiver
     private lateinit var transitionRequest: ActivityTransitionRequest
     private lateinit var transitionPendingIntent: PendingIntent
+
     private val transitionList: List<ActivityTransition> = listOf(
         ActivityTransition.Builder()
             .setActivityType(DetectedActivity.IN_VEHICLE)
@@ -204,6 +205,7 @@ class SoundClassificationService: Service() {
 
                 // filteredModelOutput이 현재 인식된 카테고리
                 for(category in filteredModelOutput) {
+                    Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
                     // category의 index가 checkCategories에 포함되었다면
                     if(category.index in checkCategories)  {
                         // Log 출력
