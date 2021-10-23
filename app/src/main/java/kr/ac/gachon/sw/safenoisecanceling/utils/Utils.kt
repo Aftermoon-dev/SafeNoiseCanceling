@@ -8,13 +8,13 @@ import androidx.core.app.ActivityCompat
 
 object Utils {
     /**
-     * 활동 인식 권한 확인
+     * 권한 확인
      * @author Minjae Seon
      * @return If Permission Granted, True or False.
      */
-    fun checkActivityRecognitionPermission(context: Context): Boolean {
+    fun checkPermission(context: Context, permission: String): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false
             }
         }

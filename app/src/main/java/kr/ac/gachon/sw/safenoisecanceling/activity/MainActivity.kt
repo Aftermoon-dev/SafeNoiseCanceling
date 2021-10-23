@@ -45,7 +45,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 Intent(this@MainActivity, SoundClassificationService::class.java).also {
                     if (ApplicationClass.SharedPreferences.isSNCEnable) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            if (Utils.checkActivityRecognitionPermission(this@MainActivity)) startForegroundService(it)
+                            if (Utils.checkPermission(this@MainActivity, android.Manifest.permission.ACTIVITY_RECOGNITION)
+                                && Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO))
+                                    startForegroundService(it)
                         } else {
                             startService(it)
                         }
@@ -80,7 +82,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
      * @author Minjae Seon
      */
     private fun setServiceSwitch() {
-        viewBinding.swcSncservice.isChecked = Utils.checkActivityRecognitionPermission(this) && ApplicationClass.SharedPreferences.isSNCEnable
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            viewBinding.swcSncservice.isChecked = Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO) &&
+                    Utils.checkPermission(this@MainActivity, android.Manifest.permission.ACTIVITY_RECOGNITION) &&
+                    ApplicationClass.SharedPreferences.isSNCEnable
+        }
+        else {
+            viewBinding.swcSncservice.isChecked = Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO) &&
+                    ApplicationClass.SharedPreferences.isSNCEnable
+        }
         ApplicationClass.SharedPreferences.isSNCEnable = viewBinding.swcSncservice.isChecked
 
         viewBinding.swcSncservice.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -92,7 +102,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 Intent(this, SoundClassificationService::class.java).also {
                     if (ApplicationClass.SharedPreferences.isSNCEnable) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            if (Utils.checkActivityRecognitionPermission(this)) startForegroundService(it)
+                            if (Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO) &&
+                                Utils.checkPermission(this@MainActivity, android.Manifest.permission.ACTIVITY_RECOGNITION))
+                                    startForegroundService(it)
                         } else {
                             startService(it)
                         }

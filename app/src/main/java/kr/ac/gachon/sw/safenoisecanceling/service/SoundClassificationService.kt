@@ -7,11 +7,15 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioRecord
 import android.os.Build
+import android.os.Handler
+import android.os.HandlerThread
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.os.HandlerCompat
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
@@ -20,8 +24,18 @@ import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
 import kr.ac.gachon.sw.safenoisecanceling.R
 import kr.ac.gachon.sw.safenoisecanceling.receiver.TransitionsReceiver
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
+import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 
 class SoundClassificationService: Service() {
+    private val TAG: String = "SCService"
+    private var MINIMUM_DISPLAY_THRESHOLD: Float = 0.3f
+
+    private val checkCategories: ArrayList<Int> = arrayListOf(294, 300, 301, 302, 303, 304, 305)
+    private var audioClassifier: AudioClassifier? = null
+    private var audioRecord: AudioRecord? = null
+    private var classificationInterval = 500L
+    private lateinit var handler: Handler
+
     private lateinit var transitionReceiver: TransitionsReceiver
     private lateinit var transitionRequest: ActivityTransitionRequest
     private lateinit var transitionPendingIntent: PendingIntent
@@ -80,8 +94,9 @@ class SoundClassificationService: Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // 권한 못 받았으면 서비스 종료
-        if (!Utils.checkActivityRecognitionPermission(applicationContext)) {
-            Log.d("SCService", "Activity Recognition Permission not allowed, stopSelf.")
+        if (!Utils.checkPermission(applicationContext, android.Manifest.permission.ACTIVITY_RECOGNITION)
+            && !Utils.checkPermission(applicationContext, android.Manifest.permission.RECORD_AUDIO)) {
+            Log.d("SCService", "Permission not allowed, stopSelf.")
             stopSelf()
         }
 
@@ -107,10 +122,21 @@ class SoundClassificationService: Service() {
         // Transition Update 등록
         registerTransitionUpdate()
 
+        // Handler 생성
+        val handlerThread = HandlerThread("backgroundThread")
+        handlerThread.start()
+        handler = HandlerCompat.createAsync(handlerThread.looper)
+
+        // 인식 시작
+        startClassification()
+
         return START_STICKY
     }
 
     override fun onDestroy() {
+        // 인식 해제
+        stopAudioClassification()
+
         // Transition Receiver 해제
         unregisterReceiver(transitionReceiver)
 
@@ -148,6 +174,62 @@ class SoundClassificationService: Service() {
             }.addOnFailureListener {
                 Log.e("SCService", "Failed to Unregister Transition Update!", it)
             }
+    }
+
+    /**
+     * 인식 Start
+     */
+    private fun startClassification() {
+        if (audioClassifier != null) return
+
+        val classifier = AudioClassifier.createFromFile(this, "yamnet.tflite")
+        val audioTensor = classifier.createInputTensorAudio()
+
+        val record = classifier.createAudioRecord()
+        record.startRecording()
+
+        // Define the classification runnable
+        val run = object : Runnable {
+            override fun run() {
+                // Load the latest audio sample
+                audioTensor.load(record)
+                val output = classifier.classify(audioTensor)
+
+                // Filter out results above a certain threshold, and sort them descendingly
+                val filteredModelOutput = output[0].categories.filter {
+                    it.score > MINIMUM_DISPLAY_THRESHOLD
+                }.sortedBy {
+                    -it.score
+                }
+
+                // filteredModelOutput이 현재 인식된 카테고리
+                for(category in filteredModelOutput) {
+                    // category의 index가 checkCategories에 포함되었다면
+                    if(category.index in checkCategories)  {
+                        // Log 출력
+                        Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
+                    }
+                }
+                handler.postDelayed(this, classificationInterval)
+            }
+        }
+
+        // Start the classification process
+        handler.post(run)
+
+        // Save the instances we just created for use later
+        audioClassifier = classifier
+        audioRecord = record
+    }
+
+    /**
+     * 인식 Stop
+     */
+    private fun stopAudioClassification() {
+        handler.removeCallbacksAndMessages(null)
+        audioRecord?.stop()
+        audioRecord = null
+        audioClassifier = null
     }
 
     /**
