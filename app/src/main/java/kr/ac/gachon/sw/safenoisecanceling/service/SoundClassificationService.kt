@@ -27,16 +27,31 @@ import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 
 class SoundClassificationService: Service() {
+    // LOG Tag
     private val TAG: String = "SCService"
-    private var MINIMUM_DISPLAY_THRESHOLD: Float = 0.3f
 
+    /** Sound Classification **/
+    // 소리 인식할 카테고리 리스트
     private val checkCategories: ArrayList<Int> = arrayListOf(294, 300, 301, 302, 303, 304, 305)
+
+    // Audio Classifier
     private var audioClassifier: AudioClassifier? = null
+
+    // 녹음
     private var audioRecord: AudioRecord? = null
+
+    // 인식 주기
     private var classificationInterval = 500L
+
+    // Background에서 소리 녹음 및 인식을 처리하기 위한 Handler
     private lateinit var handler: Handler
 
+    /** Activity Recognition **/
+
+    // 변화 동작을 받을 BroadcastReceiver
     private lateinit var transitionReceiver: TransitionsReceiver
+
+    // App이 Activity Transition 변화 요청을 받도록 요청하는 Object
     private lateinit var transitionRequest: ActivityTransitionRequest
     private lateinit var transitionPendingIntent: PendingIntent
 
@@ -97,18 +112,19 @@ class SoundClassificationService: Service() {
         // 권한 못 받았으면 서비스 종료
         if (!Utils.checkPermission(applicationContext, android.Manifest.permission.ACTIVITY_RECOGNITION)
             && !Utils.checkPermission(applicationContext, android.Manifest.permission.RECORD_AUDIO)) {
-            Log.d("SCService", "Permission not allowed, stopSelf.")
+            Log.d(TAG, "Permission not allowed, stopSelf.")
             stopSelf()
         }
 
         // 서비스 비활성화 되어있으면 서비스 종료
         if (!ApplicationClass.SharedPreferences.isSNCEnable) {
-            Log.d("SCService", "Service is not Enabled, stopSelf.")
+            Log.d(TAG, "Service is not Enabled, stopSelf.")
             stopSelf()
         }
 
-        Log.d("SCService", "Service Start!")
+        Log.d(TAG, "Service Start!")
 
+        // Foreground Service 관련 초기화
         initForegroundService()
 
         // Transition Receiver 등록
@@ -183,22 +199,29 @@ class SoundClassificationService: Service() {
     private fun startClassification() {
         if (audioClassifier != null) return
 
-        val classifier = AudioClassifier.createFromFile(this, "yamnet.tflite")
+        // TF Lite Model 파일을 불러와서 Audio Classifier 생성
+        val classifier = AudioClassifier.createFromFile(this, ApplicationClass.YAMNET_MODEL_FILE)
+
+        // Input Tensor Audio 생성
         val audioTensor = classifier.createInputTensorAudio()
 
+        // Audio Recording 시작
         val record = classifier.createAudioRecord()
         record.startRecording()
 
-        // Define the classification runnable
+        // 인식 진행하는 Runnable Object
         val run = object : Runnable {
             override fun run() {
-                // Load the latest audio sample
+                // 마지막으로 녹음된 Record 가져옴
                 audioTensor.load(record)
+
+                // 아까 생성한 Classifier로 소리 분석
                 val output = classifier.classify(audioTensor)
 
-                // Filter out results above a certain threshold, and sort them descendingly
+                // Threshold 값 이상으로 감지된 카테고리를 넣고 내림차순으로 정렬
                 val filteredModelOutput = output[0].categories.filter {
-                    it.score > MINIMUM_DISPLAY_THRESHOLD
+                    // 이때 Threshold 값은 SP에서 받아옴 (SP 값 변경은 TransitionsReceiver에서 처리)
+                    it.score > ApplicationClass.SharedPreferences.classifyThresholds
                 }.sortedBy {
                     -it.score
                 }
@@ -212,14 +235,16 @@ class SoundClassificationService: Service() {
                         Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
                     }
                 }
+
+                // 반복 주기만큼 Delayed
                 handler.postDelayed(this, classificationInterval)
             }
         }
 
-        // Start the classification process
+        // 인식 시작
         handler.post(run)
 
-        // Save the instances we just created for use later
+        // 나중에 또 사용할 수 있도록 Instance 저장
         audioClassifier = classifier
         audioRecord = record
     }
