@@ -76,4 +76,8 @@ dependencies {
 
     // Permission
     implementation 'io.github.ParkSangGwon:tedpermission-normal:3.2.3'
+
+    // Room DB
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 }

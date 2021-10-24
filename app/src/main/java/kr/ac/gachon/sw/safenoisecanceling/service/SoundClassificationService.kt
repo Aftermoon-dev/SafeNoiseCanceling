@@ -22,6 +22,7 @@ import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.DetectedActivity
 import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
 import kr.ac.gachon.sw.safenoisecanceling.R
+import kr.ac.gachon.sw.safenoisecanceling.models.Sound
 import kr.ac.gachon.sw.safenoisecanceling.receiver.TransitionsReceiver
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
@@ -226,14 +227,18 @@ class SoundClassificationService: Service() {
                     -it.score
                 }
 
+
                 // filteredModelOutput이 현재 인식된 카테고리
                 for(category in filteredModelOutput) {
-                    Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
-                    // category의 index가 checkCategories에 포함되었다면
-                    if(category.index in checkCategories)  {
-                        // Log 출력
-                        Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
-                    }
+//                    Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
+//                    // category의 index가 checkCategories에 포함되었다면
+//                    if(category.index in checkCategories)  {
+//                        // Log 출력
+//                        Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
+//                    }
+
+                    // 인식된 정보를 DB에 저장
+                    ApplicationClass.roomDatabase.soundDao().insert(Sound(soundType = category.label, score = category.score, time = System.currentTimeMillis()))
                 }
 
                 // 반복 주기만큼 Delayed
