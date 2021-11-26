@@ -2,15 +2,16 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'de.undercouch.download'
+    id 'kotlin-kapt'
 }
 
 android {
-    compileSdk 30
+    compileSdk 31
 
     defaultConfig {
         applicationId "kr.ac.gachon.sw.safenoisecanceling"
         minSdk 23
-        targetSdk 30
+        targetSdk 31
         versionCode 1000
         versionName "1.0.0a"
 
@@ -45,6 +46,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        mlModelBinding true
     }
     androidResources {
         noCompress 'tflite'
@@ -52,16 +54,17 @@ android {
 }
 
 // YAMNet Model Download
-project.ext.ASSET_DIR = projectDir.toString() + '/src/main/assets'
+project.ext.ASSET_DIR = projectDir.toString() + '/src/main/ml'
 apply from: 'download_model.gradle'
 
 dependencies {
     // Android & AndroidX Framework
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
 
     // Test
     testImplementation 'junit:junit:4.+'
@@ -79,5 +82,5 @@ dependencies {
 
     // Room DB
     implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 }
