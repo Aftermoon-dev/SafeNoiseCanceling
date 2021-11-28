@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.safenoisecanceling.activity
+package kr.ac.gachon.sw.safenoisecanceling.ui.main
 
 import kr.ac.gachon.sw.safenoisecanceling.base.BasePresenter
 import kr.ac.gachon.sw.safenoisecanceling.base.BaseView

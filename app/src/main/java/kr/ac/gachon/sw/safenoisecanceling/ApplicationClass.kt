@@ -1,8 +1,6 @@
 package kr.ac.gachon.sw.safenoisecanceling
 
 import android.app.Application
-import androidx.room.Room
-import androidx.room.RoomDatabase
 import kr.ac.gachon.sw.safenoisecanceling.db.AppDatabase
 import kr.ac.gachon.sw.safenoisecanceling.utils.Preferences
 

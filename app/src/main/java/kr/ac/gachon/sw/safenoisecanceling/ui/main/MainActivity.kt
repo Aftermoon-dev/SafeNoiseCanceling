@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.safenoisecanceling.activity
+package kr.ac.gachon.sw.safenoisecanceling.ui.main
 
 import android.Manifest
 import android.content.Intent
@@ -6,6 +6,11 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
@@ -23,11 +28,20 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         super.onCreate(savedInstanceState)
         mPresenter.createView(this)
 
-        // 퍼미션 확인
-        permissionCheck()
+        val navView: BottomNavigationView = viewBinding.navView
 
-        // 스위치 초기 값 설정
-        setServiceSwitch()
+        val navController = findNavController(R.id.nav_host_fragment)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home, R.id.navigation_history, R.id.navigation_setting
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+
+        permissionCheck()
     }
 
     override fun initPresenter() {
@@ -35,9 +49,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     /**
-     * Permission 확인
-     * @author Minjae Seon
-     */
+    * Permission 확인
+    * @author Minjae Seon
+    */
     private fun permissionCheck() {
         val permissionListener = object : PermissionListener {
             override fun onPermissionGranted() {
@@ -47,7 +61,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             if (Utils.checkPermission(this@MainActivity, android.Manifest.permission.ACTIVITY_RECOGNITION)
                                 && Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO))
-                                    startForegroundService(it)
+                                startForegroundService(it)
                         } else {
                             startService(it)
                         }
@@ -76,46 +90,4 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         permission.check()
     }
-
-    /**
-     * 권한 및 ON/OFF 여부에 따른 Switch 초기 설정
-     * @author Minjae Seon
-     */
-    private fun setServiceSwitch() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            viewBinding.swcSncservice.isChecked = Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO) &&
-                    Utils.checkPermission(this@MainActivity, android.Manifest.permission.ACTIVITY_RECOGNITION) &&
-                    ApplicationClass.SharedPreferences.isSNCEnable
-        }
-        else {
-            viewBinding.swcSncservice.isChecked = Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO) &&
-                    ApplicationClass.SharedPreferences.isSNCEnable
-        }
-        ApplicationClass.SharedPreferences.isSNCEnable = viewBinding.swcSncservice.isChecked
-
-        viewBinding.swcSncservice.setOnCheckedChangeListener { buttonView, isChecked ->
-            Log.d("MainActivity", "SNCService Switch Changed $isChecked")
-
-            ApplicationClass.SharedPreferences.isSNCEnable = isChecked
-
-            if (isChecked) {
-                Intent(this, SoundClassificationService::class.java).also {
-                    if (ApplicationClass.SharedPreferences.isSNCEnable) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            if (Utils.checkPermission(this@MainActivity, android.Manifest.permission.RECORD_AUDIO) &&
-                                Utils.checkPermission(this@MainActivity, android.Manifest.permission.ACTIVITY_RECOGNITION))
-                                    startForegroundService(it)
-                        } else {
-                            startService(it)
-                        }
-                    }
-                }
-            }
-            else {
-                stopService(Intent(this, SoundClassificationService::class.java))
-            }
-        }
-    }
 }
-
-

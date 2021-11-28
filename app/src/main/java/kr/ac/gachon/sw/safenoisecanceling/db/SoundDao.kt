@@ -11,8 +11,8 @@ interface SoundDao {
     @Query("SELECT * FROM sound")
     fun getAll(): List<Sound>
 
-    @Query("SELECT * from sound where :startTime < time and time < :endTime")
-    fun getSpecificTimeData(startTime: Long, endTime: Long): List<Sound>
+    @Query("SELECT * from sound LIMIT :startIdx, :itemCount")
+    fun getSoundDatabyIndex(startIdx: Int, itemCount: Int): List<Sound>
 
     @Insert
     fun insert(sound: Sound)
