@@ -39,8 +39,7 @@ class HistoryRVAdapter(private val context: Context, private val initList: Array
     override fun getItemCount(): Int = historyList.size
 
     fun addItems(soundList: List<Sound>) {
-        var lastidx = itemCount
-
+        val lastidx = itemCount
         historyList.addAll(soundList)
         notifyItemRangeInserted(lastidx, soundList.size)
     }
