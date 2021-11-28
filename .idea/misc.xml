@@ -3,11 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/drawable/circle_button.xml" value="0.34427083333333336" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/drawable/ic_baseline_history_24.xml" value="0.34427083333333336" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.34427083333333336" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.34427083333333336" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/drawable/ic_launcher_background.xml" value="0.34427083333333336" />
+        <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/layout/activity_decibel.xml" value="0.328125" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/layout/activity_main.xml" value="0.375" />
+        <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/layout/dialog_loading.xml" value="0.297008547008547" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/layout/fragment_history.xml" value="0.5317028985507246" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/layout/fragment_home.xml" value="0.3302083333333333" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/layout/fragment_setting.xml" value="0.49300155520995337" />

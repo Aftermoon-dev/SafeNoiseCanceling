@@ -14,6 +14,9 @@ interface SoundDao {
     @Query("SELECT * from sound LIMIT :startIdx, :itemCount")
     fun getSoundDatabyIndex(startIdx: Int, itemCount: Int): List<Sound>
 
+    @Query("DELETE from sound")
+    fun deleteAllData()
+
     @Insert
     fun insert(sound: Sound)
 

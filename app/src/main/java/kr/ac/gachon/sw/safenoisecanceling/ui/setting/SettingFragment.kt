@@ -5,11 +5,13 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.afollestad.materialdialogs.MaterialDialog
 import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
 import kr.ac.gachon.sw.safenoisecanceling.R
 import kr.ac.gachon.sw.safenoisecanceling.base.BaseFragment
 import kr.ac.gachon.sw.safenoisecanceling.databinding.FragmentSettingBinding
 import kr.ac.gachon.sw.safenoisecanceling.service.SoundClassificationService
+import kr.ac.gachon.sw.safenoisecanceling.ui.calibration.CalibrationActivity
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBinding::bind, R.layout.fragment_setting), SettingContract.View {
@@ -19,6 +21,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
         super.onViewCreated(view, savedInstanceState)
         settingPresenter.createView(this)
         setServiceSwitch()
+        setClickListener()
     }
 
     override fun onDestroyView() {
@@ -28,6 +31,42 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
 
     override fun initPresenter() {
         settingPresenter = SettingPresenter()
+    }
+
+    /**
+     * 클릭 Event 설정
+     * @author Minjae Seon
+     */
+    private fun setClickListener() {
+        // 마이크 보정 Click Listener
+        viewBinding.layoutCalibration.setOnClickListener {
+            MaterialDialog(requireContext()).show {
+                title(R.string.setting_calibration_title)
+                message(R.string.setting_calibration_msg)
+                positiveButton {
+                    // 서비스 먼저 끄기
+                    viewBinding.swcEnableService.isChecked = false
+                    requireContext().stopService(Intent(requireContext(), SoundClassificationService::class.java))
+
+                    // Calibration Activity로
+                    val calibrationIntent = Intent(requireContext(), CalibrationActivity::class.java)
+                    startActivity(calibrationIntent)
+                }
+                negativeButton { this.cancel() }
+            }
+        }
+
+        // 기록 삭제 Click Listener
+        viewBinding.layoutResethistory.setOnClickListener {
+            MaterialDialog(requireContext()).show {
+                title(R.string.setting_resethistory_dialog_title)
+                message(R.string.setting_resethistory_dialog_msg)
+                positiveButton {
+                    settingPresenter.deleteAllSoundData()
+                }
+                negativeButton { this.cancel() }
+            }
+        }
     }
 
     /**

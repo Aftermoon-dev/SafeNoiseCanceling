@@ -17,4 +17,9 @@ class Preferences(context: Context) {
     var classifyThresholds: Float
         get() = preferences.getFloat("classifyThresholds", 0.3f)
         set(value) = preferences.edit().putFloat("classifyThresholds", value).apply()
+
+    // Base Max Amplitude
+    var baseMaxAmplitude: Float
+        get() = preferences.getFloat("baseMaxAmplitude", -1000.0f)
+        set(value) = preferences.edit().putFloat("baseMaxAmplitude", value).apply()
 }

@@ -18,6 +18,7 @@ import kr.ac.gachon.sw.safenoisecanceling.R
 import kr.ac.gachon.sw.safenoisecanceling.base.BaseActivity
 import kr.ac.gachon.sw.safenoisecanceling.databinding.ActivityMainBinding
 import kr.ac.gachon.sw.safenoisecanceling.service.SoundClassificationService
+import kr.ac.gachon.sw.safenoisecanceling.ui.calibration.CalibrationActivity
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate),
@@ -56,6 +57,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         val permissionListener = object : PermissionListener {
             override fun onPermissionGranted() {
                 Log.d("MainActivity", "Permission Granted")
+
+                // 기준 Max Amplitude가 0보다 작으면
+                if(ApplicationClass.SharedPreferences.baseMaxAmplitude < 0f) {
+                    // Calibration 시작하고 Return
+                    startActivity(Intent(this@MainActivity, CalibrationActivity::class.java))
+                    return
+                }
+
+                // 그게 아니라면 정상 절차를 밟음
                 Intent(this@MainActivity, SoundClassificationService::class.java).also {
                     if (ApplicationClass.SharedPreferences.isSNCEnable) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

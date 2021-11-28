@@ -24,4 +24,12 @@ object DatabaseModel {
     fun getSoundDatabyIndex(startIdx: Int, itemCnt: Int): List<Sound> {
         return ApplicationClass.roomDatabase.soundDao().getSoundDatabyIndex(startIdx, itemCnt)
     }
+
+    /**
+     * 모든 소리 분류 데이터 삭제
+     * @author Minjae Seon
+     */
+    fun deleteAllSoundData() {
+        return ApplicationClass.roomDatabase.soundDao().deleteAllData()
+    }
 }

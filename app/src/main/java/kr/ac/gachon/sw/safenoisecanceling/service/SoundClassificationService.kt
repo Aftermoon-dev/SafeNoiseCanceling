@@ -26,8 +26,10 @@ import kr.ac.gachon.sw.safenoisecanceling.models.DatabaseModel
 import kr.ac.gachon.sw.safenoisecanceling.receiver.TransitionsReceiver
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
+import kotlin.math.round
+import kotlin.math.roundToInt
 
-class SoundClassificationService: Service() {
+class SoundClassificationService(): Service() {
     // LOG Tag
     private val TAG: String = "SCService"
 
@@ -46,6 +48,13 @@ class SoundClassificationService: Service() {
 
     // Background에서 소리 녹음 및 인식을 처리하기 위한 Handler
     private lateinit var handler: Handler
+
+    // Calibration을 위한 시작인지 확인
+    private var isCalibration = false
+
+    // Calibration용
+    private var calibrationCnt: Int = 0
+    private var calibrationSum: Float = 0.0f
 
     /** Activity Recognition **/
 
@@ -110,6 +119,10 @@ class SoundClassificationService: Service() {
     override fun onBind(intent: Intent?): IBinder? { return null }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if(intent != null) {
+            isCalibration = intent.getBooleanExtra("isCalibration", false)
+        }
+
         // 권한 못 받았으면 서비스 종료
         if (!Utils.checkPermission(applicationContext, android.Manifest.permission.ACTIVITY_RECOGNITION)
             && !Utils.checkPermission(applicationContext, android.Manifest.permission.RECORD_AUDIO)) {
@@ -117,13 +130,13 @@ class SoundClassificationService: Service() {
             stopSelf()
         }
 
-        // 서비스 비활성화 되어있으면 서비스 종료
-        if (!ApplicationClass.SharedPreferences.isSNCEnable) {
+        // 캘리브레이션도 아니고 서비스 비활성화 되어있으면 서비스 종료
+        if (!isCalibration && !ApplicationClass.SharedPreferences.isSNCEnable) {
             Log.d(TAG, "Service is not Enabled, stopSelf.")
             stopSelf()
         }
 
-        Log.d(TAG, "Service Start!")
+        Log.d(TAG, "Service Start!\nCurrent Base Amplitude : ${ApplicationClass.SharedPreferences.baseMaxAmplitude}")
 
         // Foreground Service 관련 초기화
         initForegroundService()
@@ -161,6 +174,12 @@ class SoundClassificationService: Service() {
         // 상태 변화 업데이트 해제
         unregisterTransitionUpdate()
 
+        // 캘리브레이션 값 업데이트
+        if(isCalibration) {
+            ApplicationClass.SharedPreferences.baseMaxAmplitude = (round( calibrationSum / calibrationCnt * 1000).roundToInt() / 1000.0f)
+            Log.d(TAG, "Calibration Complete - ${ApplicationClass.SharedPreferences.baseMaxAmplitude}")
+        }
+
         super.onDestroy()
     }
 
@@ -173,7 +192,7 @@ class SoundClassificationService: Service() {
         ActivityRecognition.getClient(this)
             .requestActivityTransitionUpdates(transitionRequest, transitionPendingIntent)
             .addOnSuccessListener {
-                Log.d("SCService", "Success to to Register Transition Update")
+                Log.d("SCService", "Success to Register Transition Update")
             }.addOnFailureListener {
                 Log.e("SCService", "Failed to Register Transition Update!", it)
             }
@@ -188,7 +207,7 @@ class SoundClassificationService: Service() {
         ActivityRecognition.getClient(this)
             .removeActivityTransitionUpdates(transitionPendingIntent)
             .addOnSuccessListener {
-                Log.d("SCService", "Success to to Unregister Transition Update")
+                Log.d("SCService", "Success to Unregister Transition Update")
             }.addOnFailureListener {
                 Log.e("SCService", "Failed to Unregister Transition Update!", it)
             }
@@ -210,30 +229,53 @@ class SoundClassificationService: Service() {
         val record = classifier.createAudioRecord()
         record.startRecording()
 
+
         // 인식 진행하는 Runnable Object
         val run = object : Runnable {
             override fun run() {
-                // 마지막으로 녹음된 Record 가져옴
-                audioTensor.load(record)
+                val newData = FloatArray(record.channelCount * record.bufferSizeInFrames)
+                val loadedValues = record.read(newData, 0, newData.size, AudioRecord.READ_NON_BLOCKING)
+                val maxAmplitude = newData.maxOrNull()
 
-                // 아까 생성한 Classifier로 소리 분석
-                val output = classifier.classify(audioTensor)
+                Log.d(TAG, "Max Amplitude : $maxAmplitude")
 
-                // Threshold 값 이상으로 감지된 카테고리를 넣고 내림차순으로 정렬
-                val filteredModelOutput = output[0].categories.filter {
-                    // 이때 Threshold 값은 SP에서 받아옴 (SP 값 변경은 TransitionsReceiver에서 처리)
-                    it.score > ApplicationClass.SharedPreferences.classifyThresholds
-                }.sortedBy {
-                    -it.score
+                // 캘리브레이션을 위한게 아니라면
+                if(!isCalibration) {
+                    // maxAmplitude가 Null이거나 (Max Amplitude 측정 불가), 측정된 Amplitude가 기준 Amplitude보다 0.5배정도 크다면
+                    if(maxAmplitude == null || (maxAmplitude >= ApplicationClass.SharedPreferences.baseMaxAmplitude * ( ApplicationClass.SharedPreferences.baseMaxAmplitude * 0.5))) {
+                        // 마지막으로 녹음된 Record 가져옴
+                        audioTensor.load(newData, 0, loadedValues)
+
+                        // 아까 생성한 Classifier로 소리 분석
+                        val output = classifier.classify(audioTensor)
+
+                        // Threshold 값 이상으로 감지된 카테고리를 넣고 내림차순으로 정렬
+                        val filteredModelOutput = output[0].categories.filter {
+                            // 이때 Threshold 값은 SP에서 받아옴 (SP 값 변경은 TransitionsReceiver에서 처리)
+                            it.score > ApplicationClass.SharedPreferences.classifyThresholds
+                        }.sortedBy {
+                            -it.score
+                        }
+
+                        // filteredModelOutput이 현재 인식된 카테고리
+                        for (category in filteredModelOutput) {
+                            if (category.index == 494) continue
+
+                            // Logging
+                            Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
+
+                            // 데이터베이스에 인식 정보 쓰기
+                            DatabaseModel.writeNewClassificationData(category.label, category.score)
+                        }
+                    }
                 }
-
-                // filteredModelOutput이 현재 인식된 카테고리
-                for(category in filteredModelOutput) {
-                    // Logging
-                    Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
-
-                    // 데이터베이스에 인식 정보 쓰기
-                    DatabaseModel.writeNewClassificationData(category.label, category.score)
+                else {
+                    // 캘리브레이션용 데이터 저장
+                    if(maxAmplitude != null) {
+                        calibrationCnt += 1
+                        calibrationSum += maxAmplitude
+                        Log.d(TAG, "Cnt $calibrationCnt, Current Amp $maxAmplitude Sum $calibrationSum")
+                    }
                 }
 
                 // 반복 주기만큼 Delayed

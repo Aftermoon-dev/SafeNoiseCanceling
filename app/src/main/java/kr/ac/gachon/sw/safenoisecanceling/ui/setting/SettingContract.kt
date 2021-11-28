@@ -5,5 +5,7 @@ import kr.ac.gachon.sw.safenoisecanceling.base.BaseView
 
 interface SettingContract {
     interface View: BaseView
-    interface Presenter: BasePresenter<View>
+    interface Presenter: BasePresenter<View> {
+        fun deleteAllSoundData()
+    }
 }
