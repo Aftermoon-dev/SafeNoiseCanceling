@@ -6,15 +6,22 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import kr.ac.gachon.sw.safenoisecanceling.models.Sound
 
-@Database(entities = arrayOf(Sound::class), version = 1)
+@Database(entities = [Sound::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun soundDao(): SoundDao
 
     companion object {
         private var instance: AppDatabase? = null
+
+        @Synchronized
         fun getInstance(context: Context): AppDatabase? {
             if (instance == null) {
-                instance = Room.databaseBuilder(context, AppDatabase::class.java, "snc-database.db").fallbackToDestructiveMigration().build()
+                synchronized(AppDatabase::class) {
+                    instance = Room.databaseBuilder(context, AppDatabase::class.java, "snc-database.db")
+                        .allowMainThreadQueries()
+                        .fallbackToDestructiveMigration()
+                        .build()
+                }
             }
             return instance
         }
