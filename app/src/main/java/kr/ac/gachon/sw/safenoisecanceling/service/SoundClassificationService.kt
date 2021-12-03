@@ -56,6 +56,9 @@ class SoundClassificationService(): Service() {
     private var calibrationCnt: Int = 0
     private var calibrationSum: Float = 0.0f
 
+    // Sound Level 목록
+    private val soundLevelList: ArrayList<Float> = arrayListOf()
+
     /** Activity Recognition **/
 
     // 변화 동작을 받을 BroadcastReceiver
@@ -237,7 +240,20 @@ class SoundClassificationService(): Service() {
                 val loadedValues = record.read(newData, 0, newData.size, AudioRecord.READ_NON_BLOCKING)
                 val maxAmplitude = newData.maxOrNull()
 
-                Log.d(TAG, "Max Amplitude : $maxAmplitude")
+                if(maxAmplitude != null) {
+                    // Convert 0 ~ 32767
+                    val convertAmplitude = (((maxAmplitude * 32767) / 1) + 1)
+                    val cvtAmp2 = Utils.convertDB(maxAmplitude, 0f)
+                    Log.d(TAG, "Max Amplitude : $maxAmplitude \n convert : $convertAmplitude / $cvtAmp2")
+
+                    if (soundLevelList.size >= 5) {
+                        while(soundLevelList.size < 5) {
+                            soundLevelList.removeAt(soundLevelList.size - 1)
+                        }
+                    }
+                    soundLevelList.add(maxAmplitude)
+
+                }
 
                 // 캘리브레이션을 위한게 아니라면
                 if(!isCalibration) {

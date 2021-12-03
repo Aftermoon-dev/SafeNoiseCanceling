@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
+import kotlin.math.log10
 
 object Utils {
     /**
@@ -48,5 +49,11 @@ object Utils {
             return "뛰기"
         }
         return "알 수 없음"
+    }
+
+    fun convertDB(amp: Float, mEMA: Float): Float {
+        val EMA_FILTER = 0.6
+        val mEMAValue = EMA_FILTER  * amp + (1.0 - EMA_FILTER) * mEMA
+        return 20 * log10((mEMAValue / 51805.5336) / 0.000028251).toFloat()
     }
 }
