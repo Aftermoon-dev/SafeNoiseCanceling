@@ -1,6 +1,7 @@
 package kr.ac.gachon.sw.safenoisecanceling.ui.history.adapter
 
 import android.content.Context
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +10,7 @@ import kr.ac.gachon.sw.safenoisecanceling.databinding.ItemClassifyhistoryBinding
 import kr.ac.gachon.sw.safenoisecanceling.models.Sound
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.logging.Handler
 import kotlin.math.round
 
 class HistoryRVAdapter(private val context: Context, private val initList: ArrayList<Sound>): RecyclerView.Adapter<HistoryRVAdapter.ViewHolder>() {

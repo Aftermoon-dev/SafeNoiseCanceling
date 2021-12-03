@@ -24,8 +24,11 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
             val lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
 
             if (lastVisible >= totalItemCount - 1) {
-                historyRVAdapter.addItems(historyPresenter.getSoundListByPaging(lastIdx, 15))
-                lastIdx += 15
+                // 스크롤할 때 바로 Update하는 것을 막아서 Error를 방지함
+                recyclerView.post {
+                    historyRVAdapter.addItems(historyPresenter.getSoundListByPaging(lastIdx, 15))
+                    lastIdx += 15
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ interface SoundDao {
     @Query("SELECT * FROM sound")
     fun getAll(): List<Sound>
 
-    @Query("SELECT * from sound LIMIT :startIdx, :itemCount")
+    @Query("SELECT * from sound ORDER BY id DESC LIMIT :startIdx, :itemCount")
     fun getSoundDatabyIndex(startIdx: Int, itemCount: Int): List<Sound>
 
     @Query("DELETE from sound")
