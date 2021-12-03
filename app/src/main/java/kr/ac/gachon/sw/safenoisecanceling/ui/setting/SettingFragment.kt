@@ -15,13 +15,14 @@ import kr.ac.gachon.sw.safenoisecanceling.ui.calibration.CalibrationActivity
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBinding::bind, R.layout.fragment_setting), SettingContract.View {
+    private val TAG = "SettingFragment"
     private lateinit var settingPresenter: SettingPresenter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         settingPresenter.createView(this)
-        setServiceSwitch()
-        setClickListener()
+        setInitValue()
+        setListener()
     }
 
     override fun onDestroyView() {
@@ -34,14 +35,14 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
     }
 
     /**
-     * 클릭 Event 설정
+     * Event 설정
      * @author Minjae Seon
      */
-    private fun setClickListener() {
+    private fun setListener() {
         // 마이크 보정 Click Listener
         viewBinding.layoutCalibration.setOnClickListener {
             MaterialDialog(requireContext()).show {
-                title(R.string.setting_calibration_title)
+                title(R.string.caution)
                 message(R.string.setting_calibration_msg)
                 positiveButton {
                     // 서비스 먼저 끄기
@@ -59,7 +60,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
         // 기록 삭제 Click Listener
         viewBinding.layoutResethistory.setOnClickListener {
             MaterialDialog(requireContext()).show {
-                title(R.string.setting_resethistory_dialog_title)
+                title(R.string.warning)
                 message(R.string.setting_resethistory_dialog_msg)
                 positiveButton {
                     settingPresenter.deleteAllSoundData()
@@ -67,13 +68,20 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
                 negativeButton { this.cancel() }
             }
         }
+
+        // 마이크 민감도 설정 Listener
+        viewBinding.sbMicthreshold.addOnChangeListener { _, value, fromUser ->
+            if(fromUser) ApplicationClass.SharedPreferences.micThresholds = value
+            Log.d(TAG, "New Mic Threshold : ${ApplicationClass.SharedPreferences.micThresholds}")
+        }
     }
 
     /**
-     * 권한 및 ON/OFF 여부에 따른 Switch 초기 설정
+     * 초기 값 설정
      * @author Minjae Seon
      */
-    private fun setServiceSwitch() {
+    private fun setInitValue() {
+        // Enable Switch
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             viewBinding.swcEnableService.isChecked = Utils.checkPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) &&
                     Utils.checkPermission(requireContext(), android.Manifest.permission.ACTIVITY_RECOGNITION) &&
@@ -107,6 +115,9 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
                 requireContext().stopService(Intent(requireContext(), SoundClassificationService::class.java))
             }
         }
+
+        // Mic Threshold
+        viewBinding.sbMicthreshold.setValues(ApplicationClass.SharedPreferences.micThresholds)
     }
 
 }

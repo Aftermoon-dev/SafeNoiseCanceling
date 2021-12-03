@@ -257,8 +257,9 @@ class SoundClassificationService(): Service() {
 
                 // 캘리브레이션을 위한게 아니라면
                 if(!isCalibration) {
-                    // maxAmplitude가 Null이거나 (Max Amplitude 측정 불가), 측정된 Amplitude가 기준 Amplitude보다 0.5배정도 크다면
-                    if(maxAmplitude == null || (maxAmplitude >= ApplicationClass.SharedPreferences.baseMaxAmplitude * ( ApplicationClass.SharedPreferences.baseMaxAmplitude * 0.5))) {
+                    // maxAmplitude가 Null이거나 (Max Amplitude 측정 불가), 측정된 Amplitude가 기준 Amplitude에 Threshold를 곱한 값보다 크다면
+                    if(maxAmplitude == null || (maxAmplitude >= ApplicationClass.SharedPreferences.baseMaxAmplitude *
+                                ( ApplicationClass.SharedPreferences.baseMaxAmplitude * ApplicationClass.SharedPreferences.micThresholds))) {
                         // 마지막으로 녹음된 Record 가져옴
                         audioTensor.load(newData, 0, loadedValues)
 
