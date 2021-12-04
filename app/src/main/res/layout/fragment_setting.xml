@@ -127,12 +127,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="48dp"
                 android:layout_marginEnd="48dp"
-                android:layout_marginBottom="16dp"
                 android:stepSize="100"
                 android:valueFrom="300"
                 android:valueTo="1000"
                 app:labelBehavior="floating"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_setting_classifyperiod_min" />
@@ -160,6 +158,20 @@
                 app:layout_constraintBottom_toBottomOf="@+id/tv_setting_classifyperiod_min"
                 app:layout_constraintEnd_toEndOf="@+id/sb_classifyperiod"
                 app:layout_constraintTop_toTopOf="@+id/tv_setting_classifyperiod_min" />
+
+            <TextView
+                android:id="@+id/tv_setting_classifyperiod_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/setting_classifyperiod_msg"
+                android:textAlignment="center"
+                android:textColor="?android:attr/textColorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tv_setting_classifyperiod"
+                app:layout_constraintStart_toStartOf="@+id/tv_setting_classifyperiod"
+                app:layout_constraintTop_toBottomOf="@+id/sb_classifyperiod" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
