@@ -2,6 +2,8 @@ package kr.ac.gachon.sw.safenoisecanceling.ui.history
 
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.ac.gachon.sw.safenoisecanceling.R
@@ -50,10 +52,11 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
 
     private fun initAdapter() {
         val soundList = historyPresenter.getSoundListByPaging(lastIdx, 15)
+        val divider = DividerItemDecoration(requireContext(), LinearLayout.VERTICAL)
         historyRVAdapter = HistoryRVAdapter(requireContext(), soundList as ArrayList<Sound>)
         viewBinding.rvHistory.adapter = historyRVAdapter
         viewBinding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
-
         viewBinding.rvHistory.addOnScrollListener(adapterScrollListener)
+        viewBinding.rvHistory.addItemDecoration(divider)
     }
 }
