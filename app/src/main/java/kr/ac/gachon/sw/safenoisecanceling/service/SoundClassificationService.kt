@@ -56,6 +56,9 @@ class SoundClassificationService(): Service() {
     // Sound Level 목록
     private val soundLevelList: ArrayList<Float> = arrayListOf()
 
+    // 이전 Max Amplitude
+    private var mEMA: Float = 0.0F
+
     /** Activity Recognition **/
 
     // 변화 동작을 받을 BroadcastReceiver
@@ -240,7 +243,8 @@ class SoundClassificationService(): Service() {
                 val maxAmplitude = newData.maxOrNull()
 
                 if(maxAmplitude != null) {
-                    val cvtAmp = Utils.convertDB(maxAmplitude, 0f)
+                    val cvtAmp = Utils.convertDB(maxAmplitude, mEMA)
+                    mEMA = maxAmplitude
                     Log.d(TAG, "Max Amplitude : $maxAmplitude \n convert : $cvtAmp dB")
 
                     // 평균 리스트가 5개 이상이면
