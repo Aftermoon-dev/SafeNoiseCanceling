@@ -10,6 +10,7 @@ import kr.ac.gachon.sw.safenoisecanceling.R
 import kr.ac.gachon.sw.safenoisecanceling.base.BaseFragment
 import kr.ac.gachon.sw.safenoisecanceling.databinding.FragmentHistoryBinding
 import kr.ac.gachon.sw.safenoisecanceling.models.Sound
+import kr.ac.gachon.sw.safenoisecanceling.ui.LoadingDialog
 import kr.ac.gachon.sw.safenoisecanceling.ui.history.adapter.HistoryRVAdapter
 import java.util.ArrayList
 
@@ -17,6 +18,7 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
     private lateinit var historyPresenter: HistoryPresenter
     private lateinit var historyRVAdapter: HistoryRVAdapter
     private var lastIdx = 0
+    private lateinit var loadingDialog: LoadingDialog
 
     private val adapterScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -26,10 +28,12 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
             val lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
 
             if (lastVisible >= totalItemCount - 1) {
+                loadingDialog.show()
                 // 스크롤할 때 바로 Update하는 것을 막아서 Error를 방지함
                 recyclerView.post {
                     historyRVAdapter.addItems(historyPresenter.getSoundListByPaging(lastIdx, 15))
                     lastIdx += 15
+                    loadingDialog.dismiss()
                 }
             }
         }
@@ -38,6 +42,7 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         historyPresenter.createView(this)
+        loadingDialog = LoadingDialog(requireContext())
         initAdapter()
     }
 
