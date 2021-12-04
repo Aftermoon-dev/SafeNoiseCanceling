@@ -52,8 +52,9 @@ object Utils {
     }
 
     fun convertDB(amp: Float, mEMA: Float): Float {
+        val convertAmp = (((amp * 32767) / 1) + 1)
         val EMA_FILTER = 0.6
-        val mEMAValue = EMA_FILTER  * amp + (1.0 - EMA_FILTER) * mEMA
+        val mEMAValue = EMA_FILTER  * convertAmp + (1.0 - EMA_FILTER) * mEMA
         return 20 * log10((mEMAValue / 51805.5336) / 0.000028251).toFloat()
     }
 }

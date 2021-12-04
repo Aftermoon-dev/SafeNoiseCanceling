@@ -240,18 +240,16 @@ class SoundClassificationService(): Service() {
                 val maxAmplitude = newData.maxOrNull()
 
                 if(maxAmplitude != null) {
-                    // Convert 0 ~ 32767
-                    val convertAmplitude = (((maxAmplitude * 32767) / 1) + 1)
-                    val cvtAmp2 = Utils.convertDB(maxAmplitude, 0f)
-                    Log.d(TAG, "Max Amplitude : $maxAmplitude \n convert : $convertAmplitude / $cvtAmp2")
+                    val cvtAmp = Utils.convertDB(maxAmplitude, 0f)
+                    Log.d(TAG, "Max Amplitude : $maxAmplitude \n convert : $cvtAmp dB")
 
-                    if (soundLevelList.size >= 5) {
-                        while(soundLevelList.size < 5) {
-                            soundLevelList.removeAt(soundLevelList.size - 1)
-                        }
+                    // 평균 리스트가 5개 이상이면
+                    while(soundLevelList.size > 4) {
+                        // 가장 오래된 정보 삭제
+                        soundLevelList.removeAt(0)
                     }
-                    soundLevelList.add(maxAmplitude)
-
+                    // 평균 리스트에 사운드 레벨 추가
+                    soundLevelList.add(cvtAmp)
                 }
 
                 // 캘리브레이션을 위한게 아니라면
@@ -295,7 +293,6 @@ class SoundClassificationService(): Service() {
                 }
 
                 // 반복 주기만큼 Delayed
-                Log.d(TAG, "Current Delayed ${ApplicationClass.SharedPreferences.classifyPeriod}")
                 handler.postDelayed(this, ApplicationClass.SharedPreferences.classifyPeriod)
 
             }
