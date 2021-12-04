@@ -59,7 +59,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 Log.d("MainActivity", "Permission Granted")
 
                 // 기준 Max Amplitude가 0보다 작으면
-                if(ApplicationClass.SharedPreferences.baseMaxAmplitude < 0f) {
+                if(ApplicationClass.SharedPreferences.baseMaxAmplitude == Float.MIN_VALUE) {
                     // Calibration 시작하고 Return
                     startActivity(Intent(this@MainActivity, CalibrationActivity::class.java))
                     return
