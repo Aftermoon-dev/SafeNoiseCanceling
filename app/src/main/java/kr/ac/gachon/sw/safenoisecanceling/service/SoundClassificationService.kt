@@ -233,6 +233,8 @@ class SoundClassificationService(): Service() {
         // 인식 진행하는 Runnable Object
         val run = object : Runnable {
             override fun run() {
+                if(!ApplicationClass.SharedPreferences.isSNCEnable) return
+
                 val newData = FloatArray(record.channelCount * record.bufferSizeInFrames)
                 val loadedValues = record.read(newData, 0, newData.size, AudioRecord.READ_NON_BLOCKING)
                 val maxAmplitude = newData.maxOrNull()
