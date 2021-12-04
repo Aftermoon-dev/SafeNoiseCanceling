@@ -100,10 +100,74 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_micthreshold"
+            android:id="@+id/layout_classifyperiod"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@+id/layout_resethistory">
+
+            <TextView
+                android:id="@+id/tv_setting_classifyperiod"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/setting_classifyperiod"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/sb_classifyperiod"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginEnd="48dp"
+                android:layout_marginBottom="16dp"
+                android:stepSize="100"
+                android:valueFrom="200"
+                android:valueTo="1000"
+                app:labelBehavior="floating"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_classifyperiod_min" />
+
+            <TextView
+                android:id="@+id/tv_setting_classifyperiod_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/setting_classifyperiod_min"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/sb_classifyperiod"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_classifyperiod" />
+
+            <TextView
+                android:id="@+id/tv_setting_classifyperiod_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_classifyperiod_max"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_setting_classifyperiod_min"
+                app:layout_constraintEnd_toEndOf="@+id/sb_classifyperiod"
+                app:layout_constraintTop_toTopOf="@+id/tv_setting_classifyperiod_min" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_micthreshold"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/layout_classifyperiod">
 
             <TextView
                 android:id="@+id/tv_setting_micthreshold"
@@ -127,9 +191,9 @@
                 android:layout_marginStart="48dp"
                 android:layout_marginEnd="48dp"
                 android:layout_marginBottom="16dp"
+                android:stepSize="0.1"
                 android:valueFrom="0.2"
                 android:valueTo="0.8"
-                android:stepSize="0.1"
                 app:labelBehavior="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

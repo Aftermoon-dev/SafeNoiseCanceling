@@ -23,7 +23,13 @@ class Preferences(context: Context) {
         get() = preferences.getFloat("baseMaxAmplitude", Float.MIN_VALUE)
         set(value) = preferences.edit().putFloat("baseMaxAmplitude", value).apply()
 
+    // Mic Threshold
     var micThresholds: Float
         get() = preferences.getFloat("micThresholds", 0.5f)
         set(value) = preferences.edit().putFloat("micThresholds", value).apply()
+
+    // Classify Period
+    var classifyPeriod: Long
+        get() = preferences.getLong("classifyPeriod", 500L)
+        set(value) = preferences.edit().putLong("classifyPeriod", value).apply()
 }

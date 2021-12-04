@@ -43,9 +43,6 @@ class SoundClassificationService(): Service() {
     // 녹음
     private var audioRecord: AudioRecord? = null
 
-    // 인식 주기
-    private var classificationInterval = 500L
-
     // Background에서 소리 녹음 및 인식을 처리하기 위한 Handler
     private lateinit var handler: Handler
 
@@ -296,7 +293,9 @@ class SoundClassificationService(): Service() {
                 }
 
                 // 반복 주기만큼 Delayed
-                handler.postDelayed(this, classificationInterval)
+                Log.d(TAG, "Current Delayed ${ApplicationClass.SharedPreferences.classifyPeriod}")
+                handler.postDelayed(this, ApplicationClass.SharedPreferences.classifyPeriod)
+
             }
         }
 

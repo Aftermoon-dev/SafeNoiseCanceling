@@ -13,6 +13,7 @@ import kr.ac.gachon.sw.safenoisecanceling.databinding.FragmentSettingBinding
 import kr.ac.gachon.sw.safenoisecanceling.service.SoundClassificationService
 import kr.ac.gachon.sw.safenoisecanceling.ui.calibration.CalibrationActivity
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
+import kotlin.math.round
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBinding::bind, R.layout.fragment_setting), SettingContract.View {
     private val TAG = "SettingFragment"
@@ -69,6 +70,11 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
             }
         }
 
+        viewBinding.sbClassifyperiod.addOnChangeListener { slider, value, fromUser ->
+            if(fromUser) ApplicationClass.SharedPreferences.classifyPeriod = value.toLong()
+            Log.d(TAG, "New Classify Period : $value, ${ApplicationClass.SharedPreferences.classifyPeriod}")
+        }
+
         // 마이크 민감도 설정 Listener
         viewBinding.sbMicthreshold.addOnChangeListener { _, value, fromUser ->
             if(fromUser) ApplicationClass.SharedPreferences.micThresholds = value
@@ -115,6 +121,12 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
                 requireContext().stopService(Intent(requireContext(), SoundClassificationService::class.java))
             }
         }
+
+        // Classify Period
+        viewBinding.sbClassifyperiod.setLabelFormatter {
+            return@setLabelFormatter getString(R.string.setting_classifyperiod_label, "%.1f".format(it / 1000.0))
+        }
+        viewBinding.sbClassifyperiod.setValues(ApplicationClass.SharedPreferences.classifyPeriod.toFloat())
 
         // Mic Threshold
         viewBinding.sbMicthreshold.setValues(ApplicationClass.SharedPreferences.micThresholds)
