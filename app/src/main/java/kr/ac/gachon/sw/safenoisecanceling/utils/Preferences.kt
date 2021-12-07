@@ -19,9 +19,9 @@ class Preferences(context: Context) {
         set(value) = preferences.edit().putFloat("classifyThresholds", value).apply()
 
     // Base Max Amplitude
-    var baseMaxAmplitude: Float
-        get() = preferences.getFloat("baseMaxAmplitude", Float.MIN_VALUE)
-        set(value) = preferences.edit().putFloat("baseMaxAmplitude", value).apply()
+    var baseMaxDecibel: Float
+        get() = preferences.getFloat("baseMaxDecibel", Float.MIN_VALUE)
+        set(value) = preferences.edit().putFloat("baseMaxDecibel", value).apply()
 
     // Mic Threshold
     var micThresholds: Float

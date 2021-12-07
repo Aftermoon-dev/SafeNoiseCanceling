@@ -51,10 +51,33 @@ object Utils {
         return "알 수 없음"
     }
 
-    fun convertDB(amp: Float, mEMA: Float): Float {
+    /**
+     * Amplitude to Decibel
+     * @author Minjae Seon
+     * @reference https://github.com/wgcv/Sound-decibel-Meter/blob/master/dBT/app/src/main/java/me/wgcv/dbt/MainActivity.java
+     * @param amp Amplitude
+     * @param mEMA Before Amplitude (If First, 0)
+     * @return Decibel (Double)
+     */
+    fun convertDecibel(amp: Float, mEMA: Float): Float {
         val convertAmp = (((amp * 32767) / 1) + 1)
         val EMA_FILTER = 0.6
         val mEMAValue = EMA_FILTER  * convertAmp + (1.0 - EMA_FILTER) * mEMA
         return 20 * log10((mEMAValue / 51805.5336) / 0.000028251).toFloat()
+    }
+
+    /**
+     * Float List의 평균 계산
+     * @author Minjae Seon
+     * @param list List of Float
+     * @return Average in List Elements
+     */
+    fun calculateAvginFloatList(list: List<Float>): Float {
+        var sum = 0f
+        for(value in list) {
+            sum += value
+        }
+
+        return sum / list.size
     }
 }

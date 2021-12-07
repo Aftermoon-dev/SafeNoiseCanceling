@@ -139,7 +139,7 @@ class SoundClassificationService(): Service() {
             stopSelf()
         }
 
-        Log.d(TAG, "Service Start!\nCurrent Base Amplitude : ${ApplicationClass.SharedPreferences.baseMaxAmplitude}")
+        Log.d(TAG, "Service Start!\nCurrent Base Decibel : ${ApplicationClass.SharedPreferences.baseMaxDecibel}")
 
         // Foreground Service 관련 초기화
         initForegroundService()
@@ -179,8 +179,8 @@ class SoundClassificationService(): Service() {
 
         // 캘리브레이션 값 업데이트
         if(isCalibration) {
-            ApplicationClass.SharedPreferences.baseMaxAmplitude = (round( calibrationSum / calibrationCnt * 1000).roundToInt() / 1000.0f)
-            Log.d(TAG, "Calibration Complete - ${ApplicationClass.SharedPreferences.baseMaxAmplitude}")
+            ApplicationClass.SharedPreferences.baseMaxDecibel = (round( calibrationSum / calibrationCnt * 1000).roundToInt() / 1000.0f)
+            Log.d(TAG, "Calibration Complete - ${ApplicationClass.SharedPreferences.baseMaxDecibel}")
         }
 
         super.onDestroy()
@@ -238,29 +238,43 @@ class SoundClassificationService(): Service() {
             override fun run() {
                 if(!ApplicationClass.SharedPreferences.isSNCEnable) return
 
+                // Sound Buffer
                 val newData = FloatArray(record.channelCount * record.bufferSizeInFrames)
                 val loadedValues = record.read(newData, 0, newData.size, AudioRecord.READ_NON_BLOCKING)
+
+                // Get Max Amplitude
                 val maxAmplitude = newData.maxOrNull()
 
+                // Decibel
+                var decibel: Float? = null
+
+                // Max Amplitude가 제대로 가져와진 경우
                 if(maxAmplitude != null) {
-                    val cvtAmp = Utils.convertDB(maxAmplitude, mEMA)
+
+                    // Decibel로 변환
+                    decibel = Utils.convertDecibel(maxAmplitude, mEMA)
+
+                    // 이번 Amplitude를 새로운 mEMA 값으로 지정
                     mEMA = maxAmplitude
-                    Log.d(TAG, "Max Amplitude : $maxAmplitude \n convert : $cvtAmp dB")
+
+                    Log.d(TAG, "Max Amplitude : $maxAmplitude \n convert : $decibel dB")
 
                     // 평균 리스트가 5개 이상이면
                     while(soundLevelList.size > 4) {
                         // 가장 오래된 정보 삭제
                         soundLevelList.removeAt(0)
                     }
-                    // 평균 리스트에 사운드 레벨 추가
-                    soundLevelList.add(cvtAmp)
+                    // 평균 리스트에 데시벨 추가
+                    soundLevelList.add(decibel)
                 }
 
                 // 캘리브레이션을 위한게 아니라면
                 if(!isCalibration) {
-                    // maxAmplitude가 Null이거나 (Max Amplitude 측정 불가), 측정된 Amplitude가 기준 Amplitude에 Threshold를 곱한 값보다 크다면
-                    if(maxAmplitude == null || (maxAmplitude >= ApplicationClass.SharedPreferences.baseMaxAmplitude *
-                                ( ApplicationClass.SharedPreferences.baseMaxAmplitude * ApplicationClass.SharedPreferences.micThresholds))) {
+                    // MaxAmplitude를 가져올 수 없었거나
+                    if(maxAmplitude == null ||
+                        // Decibel 정보가 Null이 아니고, 최근 5개 Decibel의 평균이 Calibration에서 측정된 값에 Threshold를 곱한 값보다 크다면
+                        (decibel != null &&
+                                (Utils.calculateAvginFloatList(soundLevelList) >= ApplicationClass.SharedPreferences.baseMaxDecibel + (ApplicationClass.SharedPreferences.baseMaxDecibel * ApplicationClass.SharedPreferences.micThresholds)))) {
                         // 마지막으로 녹음된 Record 가져옴
                         audioTensor.load(newData, 0, loadedValues)
 
@@ -289,10 +303,10 @@ class SoundClassificationService(): Service() {
                 }
                 else {
                     // 캘리브레이션용 데이터 저장
-                    if(maxAmplitude != null) {
+                    if(maxAmplitude != null && decibel != null) {
                         calibrationCnt += 1
-                        calibrationSum += maxAmplitude
-                        Log.d(TAG, "Cnt $calibrationCnt, Current Amp $maxAmplitude Sum $calibrationSum")
+                        calibrationSum += decibel
+                        Log.d(TAG, "Cnt $calibrationCnt, Current Decibel $decibel Sum $calibrationSum")
                     }
                 }
 
