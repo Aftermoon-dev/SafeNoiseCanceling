@@ -3,7 +3,7 @@
 
 Currently, it is only available on Android platforms.
 
-In addition, the project is of a research and does not guarantee stability in actual use. Therefore, all risks arising from actual use are the responsibility of the user.
+**In addition, the project is of a research and does not guarantee stability in actual use. Therefore, all risks arising from actual use are the responsibility of the user.**
 
 ## Objective
  * Recognizes dangerous sounds heard around and alerts the user.
