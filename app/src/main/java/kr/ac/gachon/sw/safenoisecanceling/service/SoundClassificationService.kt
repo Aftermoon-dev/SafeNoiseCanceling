@@ -140,6 +140,7 @@ class SoundClassificationService(): Service() {
         }
 
         Log.d(TAG, "Service Start!\nCurrent Base Decibel : ${ApplicationClass.SharedPreferences.baseMaxDecibel}")
+        Log.d(TAG, "isCalibration: $isCalibration")
 
         // Foreground Service 관련 초기화
         initForegroundService()
@@ -236,7 +237,7 @@ class SoundClassificationService(): Service() {
         // 인식 진행하는 Runnable Object
         val run = object : Runnable {
             override fun run() {
-                if(!ApplicationClass.SharedPreferences.isSNCEnable) return
+                if(!isCalibration && !ApplicationClass.SharedPreferences.isSNCEnable) return
 
                 // Sound Buffer
                 val newData = FloatArray(record.channelCount * record.bufferSizeInFrames)
@@ -266,6 +267,9 @@ class SoundClassificationService(): Service() {
                     }
                     // 평균 리스트에 데시벨 추가
                     soundLevelList.add(decibel)
+                }
+                else {
+                    Log.d(TAG, "Max Amplitude is Null!\n$newData")
                 }
 
                 // 캘리브레이션을 위한게 아니라면
@@ -302,12 +306,14 @@ class SoundClassificationService(): Service() {
                     }
                 }
                 else {
+                    Log.d(TAG, "Decibel $decibel")
                     // 캘리브레이션용 데이터 저장
                     if(maxAmplitude != null && decibel != null) {
                         calibrationCnt += 1
                         calibrationSum += decibel
                         Log.d(TAG, "Cnt $calibrationCnt, Current Decibel $decibel Sum $calibrationSum")
                     }
+
                 }
 
                 // 반복 주기만큼 Delayed
