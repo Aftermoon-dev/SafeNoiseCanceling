@@ -3,6 +3,7 @@ package kr.ac.gachon.sw.safenoisecanceling.utils
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.google.android.gms.location.DetectedActivity
 
 class Preferences(context: Context) {
     private val preferences: SharedPreferences =
@@ -32,4 +33,9 @@ class Preferences(context: Context) {
     var classifyPeriod: Long
         get() = preferences.getLong("classifyPeriod", 500L)
         set(value) = preferences.edit().putLong("classifyPeriod", value).apply()
+
+    // 최종 Activity
+    var lastActivity: Int
+        get() = preferences.getInt("lastActivity", DetectedActivity.STILL)
+        set(value) = preferences.edit().putInt("lastActivity", value).apply()
 }

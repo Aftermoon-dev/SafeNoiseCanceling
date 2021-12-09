@@ -8,6 +8,7 @@ import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionResult
 import com.google.android.gms.location.DetectedActivity
 import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
+import kr.ac.gachon.sw.safenoisecanceling.utils.RxEventBus
 
 class TransitionsReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -27,6 +28,12 @@ class TransitionsReceiver: BroadcastReceiver() {
 
                         // 행동에 진입하는 경우
                         if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
+                            // 현재 Activity를 실시간 Update하기 위해 Event 전송
+                            ApplicationClass.rxEventBus.sendEvent("currentActivity", event.activityType)
+
+                            // 안 켜져있을 수도 있으므로 켰을때 바로 볼 수 있도록 SP에 저장
+                            ApplicationClass.SharedPreferences.lastActivity = event.activityType
+
                             // Activity Type에 따라 Threshold 설정
                             when(event.activityType) {
                                 // 걷거나 달리는 경우
