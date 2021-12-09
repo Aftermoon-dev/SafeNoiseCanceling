@@ -7,7 +7,9 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioAttributes
 import android.media.AudioRecord
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
@@ -24,6 +26,7 @@ import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
 import kr.ac.gachon.sw.safenoisecanceling.R
 import kr.ac.gachon.sw.safenoisecanceling.models.DatabaseModel
 import kr.ac.gachon.sw.safenoisecanceling.receiver.TransitionsReceiver
+import kr.ac.gachon.sw.safenoisecanceling.ui.main.MainActivity
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import kotlin.math.round
@@ -58,6 +61,10 @@ class SoundClassificationService(): Service() {
 
     // 이전 Max Amplitude
     private var mEMA: Float = 0.0F
+
+    // Notificaiton
+    private lateinit var notificationManager: NotificationManager
+    private var lastNotificationTime: Long = Long.MAX_VALUE
 
     /** Activity Recognition **/
 
@@ -138,6 +145,8 @@ class SoundClassificationService(): Service() {
             Log.d(TAG, "Service is not Enabled, stopSelf.")
             stopSelf()
         }
+
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         Log.d(TAG, "Service Start!\nCurrent Base Decibel : ${ApplicationClass.SharedPreferences.baseMaxDecibel}")
         Log.d(TAG, "isCalibration: $isCalibration")
@@ -300,6 +309,12 @@ class SoundClassificationService(): Service() {
                             // Logging
                             Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
 
+                            if(category.index in checkCategories) {
+                                //sendNotification()
+                            }
+
+                            sendNotification()
+
                             // 데이터베이스에 인식 정보 쓰기
                             DatabaseModel.writeNewClassificationData(category.label, category.score)
                         }
@@ -340,6 +355,42 @@ class SoundClassificationService(): Service() {
         audioClassifier = null
     }
 
+
+    /**
+     * 위험 알림 전송
+     */
+    private fun sendNotification() {
+        val sound = Uri.parse("android.resource://" + packageName + "/" + R.raw.beep)
+        val soundAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), 0)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notiChannel = NotificationChannel(ApplicationClass.SC_WARNING_CHANNEL_ID, getString(R.string.soundservice_warning_channel), NotificationManager.IMPORTANCE_HIGH)
+            notiChannel.setSound(sound, soundAttributes)
+            notificationManager.createNotificationChannel(notiChannel)
+        }
+
+        val notiBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, ApplicationClass.SC_WARNING_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(getString(R.string.soundservice_warning_title))
+            .setContentText(getString(R.string.soundservice_warning_msg))
+            .setSound(sound)
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setContentIntent(pendingIntent)
+
+        // Notification Delay
+        if(lastNotificationTime + 10000 <= System.currentTimeMillis()) {
+            // 노래 일시정지
+            Utils.pauseMediaPlay(applicationContext)
+            lastNotificationTime = System.currentTimeMillis()
+            notificationManager.notify(1000, notiBuilder.build())
+        }
+    }
+
     /**
      * 꺼지지 않는 Foreground Service 설정
      * @author Minjae Seon
@@ -364,7 +415,6 @@ class SoundClassificationService(): Service() {
                 .setStyle(NotificationCompat.BigTextStyle())
                 .setContentIntent(pendingIntent)
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notiChannel)
             startForeground(1, notiBuilder.build())
         }

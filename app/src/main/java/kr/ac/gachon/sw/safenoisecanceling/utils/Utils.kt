@@ -2,7 +2,10 @@ package kr.ac.gachon.sw.safenoisecanceling.utils
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.Build
+import android.os.SystemClock
+import android.view.KeyEvent
 import androidx.core.app.ActivityCompat
 import kotlin.math.log10
 
@@ -79,5 +82,34 @@ object Utils {
         }
 
         return sum / list.size
+    }
+
+    /**
+     * 미디어 (영상, 노래 등) 일시정지 신호 보내기
+     * @author Minjae Seon
+     * @param context Application Context
+     */
+    fun pauseMediaPlay(context: Context) {
+        val eventTime = SystemClock.uptimeMillis() - 1
+        val audioManager: AudioManager =
+            context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.dispatchMediaKeyEvent(
+            KeyEvent(
+                eventTime,
+                eventTime,
+                KeyEvent.ACTION_DOWN,
+                KeyEvent.KEYCODE_MEDIA_PAUSE,
+                0
+            )
+        )
+        audioManager.dispatchMediaKeyEvent(
+            KeyEvent(
+                eventTime,
+                eventTime,
+                KeyEvent.ACTION_UP,
+                KeyEvent.KEYCODE_MEDIA_PAUSE,
+                0
+            )
+        )
     }
 }

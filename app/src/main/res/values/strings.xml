@@ -17,6 +17,10 @@
     <string name="soundservice_noti_title">Safe Noise Canceling</string>
     <string name="soundservice_noti_msg">Safe Noise Canceling 서비스가 작동중입니다.</string>
 
+    <string name="soundservice_warning_channel">안전 경고 알림</string>
+    <string name="soundservice_warning_title">안전 경고</string>
+    <string name="soundservice_warning_msg">주변에서 위험한 소리가 감지되었습니다!</string>
+
     <!-- History -->
     <string name="history_msg">모든 기록은 사용자의 기기에만 저장됩니다!</string>
     <string name="history_type">%1$s (%2$s%% 일치)</string>

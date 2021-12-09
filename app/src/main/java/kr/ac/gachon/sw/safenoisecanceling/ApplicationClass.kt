@@ -9,6 +9,7 @@ import kr.ac.gachon.sw.safenoisecanceling.utils.RxEventBus
 class ApplicationClass: Application() {
     companion object {
         const val SC_SERVICE_CHANNEL_ID = "SNC_SoundService"
+        const val SC_WARNING_CHANNEL_ID = "SNC_WARNING"
         const val TRANSITIONS_RECEIVER_ACTION = "SNC_TRANSITIONS"
         const val YAMNET_MODEL_FILE = "yamnet.tflite"
 
