@@ -310,10 +310,8 @@ class SoundClassificationService(): Service() {
                             Log.d(TAG, "Detected - ${category.index} / ${category.label} / ${category.score}")
 
                             if(category.index in checkCategories) {
-                                //sendNotification()
+                                sendNotification()
                             }
-
-                            sendNotification()
 
                             // 데이터베이스에 인식 정보 쓰기
                             DatabaseModel.writeNewClassificationData(category.label, category.score)
