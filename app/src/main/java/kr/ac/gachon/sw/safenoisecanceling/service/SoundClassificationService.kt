@@ -269,6 +269,9 @@ class SoundClassificationService(): Service() {
 
                     Log.d(TAG, "Max Amplitude : $maxAmplitude \n convert : $decibel dB")
 
+                    // 현재 Decibel을 Activity에서도 알 수 있도록 Event 전송
+                    ApplicationClass.rxEventBus.sendEvent("currentDecibel", decibel)
+
                     // 평균 리스트가 5개 이상이면
                     while(soundLevelList.size > 4) {
                         // 가장 오래된 정보 삭제

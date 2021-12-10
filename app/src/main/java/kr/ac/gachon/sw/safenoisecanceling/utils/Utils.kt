@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.core.app.ActivityCompat
+import kr.ac.gachon.sw.safenoisecanceling.R
 import kotlin.math.log10
 
 object Utils {
@@ -25,33 +26,48 @@ object Utils {
     }
 
     /**
-     * Activity Number to String
+     * Activity Number to Drawable
      * @author Minjae Seon
-     * @return 활동 번호를 String 형태로 변환
+     * @return 활동 번호를 Drawable Int 형태로 변환
      */
-    fun activityToString(activitynum: Int): String {
-        if (activitynum == 0) {
-            return "차량 안"
+    fun activityToDrawable(activityNum: Int): Int {
+        return when {
+            activityNum == 0 ->
+                R.drawable.car
+            activityNum == 1 ->
+                R.drawable.ic_baseline_directions_bike_24
+            activityNum == 2 ->
+                R.drawable.footprints
+            activityNum == 3 ->
+                R.drawable.person
+            activityNum == 7 ->
+                R.drawable.walk
+            activityNum == 8 ->
+                R.drawable.walk
+            else ->
+                R.drawable.ic_baseline_help_24
         }
-        else if (activitynum == 1) {
-            return "자전거"
+    }
+
+    /**
+     * Decibel to String
+     * @author Minjae Seon
+     * @return 데시벨 수치에 따라 String으로 바꿈
+     */
+    fun decibelToString(context: Context, decibel: Float): String {
+        val decibelStrArray = context.resources.getStringArray(R.array.decibel)
+        return when {
+            decibel < 10 -> "알 수 없음"
+            decibel < 20 -> decibelStrArray[0]
+            decibel < 30 -> decibelStrArray[1]
+            decibel < 40 -> decibelStrArray[2]
+            decibel < 50 -> decibelStrArray[3]
+            decibel < 60 -> decibelStrArray[4]
+            decibel < 70 -> decibelStrArray[5]
+            decibel < 80 -> decibelStrArray[6]
+            decibel < 90 -> decibelStrArray[7]
+            else -> decibelStrArray[8]
         }
-        else if (activitynum == 2) {
-            return "도보 (걷기 or 뛰기)"
-        }
-        else if (activitynum == 3) {
-            return "가만히 있음"
-        }
-        else if (activitynum == 5) {
-            return "기기 기울어짐"
-        }
-        else if (activitynum == 7) {
-            return "걷기"
-        }
-        else if (activitynum == 8) {
-            return "뛰기"
-        }
-        return "알 수 없음"
     }
 
     /**

@@ -8,6 +8,38 @@
     <string name="title_history">기록</string>
     <string name="title_setting">설정</string>
 
+    <!-- Fragment Main -->
+    <string name="fragment_main_mystate">My State</string>
+    <string name="fragment_main_nearbysoundlevel">주변 소리 크기</string>
+    <string name="fragment_main_soundlevel">%1$s dB</string>
+
+    <!-- Activity -->
+    <string-array name="activity">
+        <item>이동 수단</item>
+        <item>자전거</item>
+        <item>도보</item>
+        <item>정지</item>
+        <item>알 수 없음</item>
+        <item>기기 기울어짐</item>
+        <item>알 수 없음</item>
+        <item>걷기</item>
+        <item>뛰기</item>
+    </string-array>
+
+    <!-- Decibel -->
+    <string-array name="decibel">
+        <item>매우 조용함</item>
+        <item>나뭇잎 소리</item>
+        <item>속삭이는 소리</item>
+        <item>조용한 도서관</item>
+        <item>조용한 사무실</item>
+        <item>대화 소리</item>
+        <item>혼잡한 차도</item>
+        <item>혼잡한 거리</item>
+        <item>공구 소음</item>
+    </string-array>
+
+
     <!-- Permission String -->
     <string name="permission_req_msg">Application의 전체 기능을 이용하시려면 권한 허용이 필요합니다.</string>
     <string name="permission_denied">권한 허용이 이루어지지 않아 Application 이용이 제한됩니다. 설정에서 권한을 허용해주세요.</string>
@@ -40,7 +72,7 @@
     <string name="setting_micthreshold">마이크 민감도 설정</string>
     <string name="setting_micthreshold_min">민감</string>
     <string name="setting_micthreshold_max">둔감</string>
-    <string name="setting_author">가천대학교 소프트웨어학과 졸업작품 프로젝트\n5분반 7조 (김나형, 박다정, 선민재)\n2021.3 ~ 2022.6</string>
+    <string name="setting_author">해당 앱은 연구용으로, 실제 사용에 대한 모든 책임은 사용자에게 있습니다.\n가천대학교 소프트웨어학과 졸업작품 프로젝트\n5분반 7조 (김나형, 박다정, 선민재)\n2021.3 ~ 2022.6</string>
 
     <!-- Calibration -->
     <string name="calibration_title">마이크 보정</string>
