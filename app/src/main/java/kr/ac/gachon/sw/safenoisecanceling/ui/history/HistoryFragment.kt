@@ -43,6 +43,7 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
         super.onViewCreated(view, savedInstanceState)
         historyPresenter.createView(this)
         loadingDialog = LoadingDialog(requireContext())
+        initRefresh()
         initAdapter()
     }
 
@@ -55,7 +56,16 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
         historyPresenter = HistoryPresenter()
     }
 
+    private fun initRefresh() {
+        viewBinding.layoutRefresh.setOnRefreshListener {
+            initAdapter()
+            viewBinding.layoutRefresh.isRefreshing = false
+        }
+    }
+
     private fun initAdapter() {
+        loadingDialog.show()
+
         val soundList = historyPresenter.getSoundListByPaging(lastIdx, 15)
         val divider = DividerItemDecoration(requireContext(), LinearLayout.VERTICAL)
         historyRVAdapter = HistoryRVAdapter(requireContext(), soundList as ArrayList<Sound>)
@@ -63,5 +73,7 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>(FragmentHistoryBind
         viewBinding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
         viewBinding.rvHistory.addOnScrollListener(adapterScrollListener)
         viewBinding.rvHistory.addItemDecoration(divider)
+
+        loadingDialog.dismiss()
     }
 }
