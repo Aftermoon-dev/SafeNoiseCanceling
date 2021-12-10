@@ -19,7 +19,7 @@
         android:theme="@style/Theme.SafeNoiseCanceling">
 
         <activity
-            android:name="kr.ac.gachon.sw.safenoisecanceling.ui.main.MainActivity"
+            android:name=".ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.main.MainActivity" />
 
         <activity android:name=".ui.calibration.CalibrationActivity" />
 

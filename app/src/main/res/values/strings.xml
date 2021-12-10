@@ -8,6 +8,10 @@
     <string name="title_history">기록</string>
     <string name="title_setting">설정</string>
 
+    <!-- Splash -->
+    <string name="splash_app_name">Safe\nNoise\nCanceling</string>
+    <string name="splash_text">Feel the convenience.\nFeel the freedom.\nAnd feel the safety.</string>
+
     <!-- Fragment Main -->
     <string name="fragment_main_mystate">My State</string>
     <string name="fragment_main_nearbysoundlevel">주변 소리 크기</string>
