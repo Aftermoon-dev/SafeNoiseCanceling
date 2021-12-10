@@ -40,6 +40,7 @@ class CalibrationActivity: BaseActivity<ActivityCalibrationBinding>(ActivityCali
 
             if (Utils.checkPermission(this@CalibrationActivity, android.Manifest.permission.ACTIVITY_RECOGNITION) && Utils.checkPermission(this@CalibrationActivity, android.Manifest.permission.RECORD_AUDIO)) {
                 loadingDialog.show()
+                viewBinding.tvCalibrationBottomMsg.text = getString(R.string.calibration_bottom_msg_during)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     this@CalibrationActivity.startForegroundService(serviceIntent)
                 } else {

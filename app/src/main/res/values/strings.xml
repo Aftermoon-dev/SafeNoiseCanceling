@@ -83,4 +83,6 @@
     <string name="calibration_msg">보다 나은 인식을 위해 30초 간 마이크 보정이 필요합니다.\n\n주변 환경을 최대한 조용하게 해주시고,\n다른 소리를 내지 않도록 주의해주세요.\n\n음성은 저장되지 않습니다.</string>
     <string name="calibration_start_button">보정 시작하기</string>
     <string name="calibration_finish">보정이 끝났습니다.</string>
+    <string name="calibration_bottom_msg_ready">보정 버튼을 눌러주세요.</string>
+    <string name="calibration_bottom_msg_during">보정을 진행하고 있습니다..</string>
 </resources>
