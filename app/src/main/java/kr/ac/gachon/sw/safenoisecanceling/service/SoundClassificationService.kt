@@ -38,7 +38,9 @@ class SoundClassificationService(): Service() {
 
     /** Sound Classification **/
     // 소리 인식할 카테고리 리스트
-    private val checkCategories: ArrayList<Int> = arrayListOf(294, 300, 301, 302, 303, 304, 305)
+    private val checkCategories: ArrayList<Int> = arrayListOf(6, 9, 11, 198, 294, 300, 301, 302, 303, 304, 306, 307,
+        308, 309, 310, 311, 312, 315, 316, 317, 318, 319, 320, 321,
+        335, 337, 338, 342, 343, 345, 347, 390, 391, 393, 394, 419)
 
     // Audio Classifier
     private var audioClassifier: AudioClassifier? = null
