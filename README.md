@@ -5,6 +5,17 @@ Currently, it is only available on Android platforms.
 
 **This project is of a research and does not guarantee stability in actual use. Therefore, all risks arising from actual use are the responsibility of the user.**
 
+## Presentation Video
+### Graduation Project 1
+<p align="center">
+<a href="https://www.youtube.com/watch?v=Ys6V7b3KV-E"><img src="https://user-images.githubusercontent.com/3215313/145777834-0df78a91-70dc-4a7f-967f-a768b376782c.jpg" width="80%"></a>
+</p>
+
+### Graduation Project 2
+<p align="center">
+<a href="https://www.youtube.com/watch?v=FrlF4iO9_Hw"><img src="https://user-images.githubusercontent.com/3215313/145777534-42540d2b-72f8-4897-a116-8354a764db57.jpg" width="80%"></a>
+</p>
+
 ## Objective
  * Recognizes dangerous sounds heard around and alerts the user.
  
