@@ -24,7 +24,16 @@
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/layout/item_classifyhistory.xml" value="0.5317028985507246" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/menu/bottom_nav_menu.xml" value="0.328125" />
         <entry key="..\:/Develop/SafeNoiseCanceling/app/src/main/res/xml/root_preferences.xml" value="0.3302083333333333" />
+        <entry key="app/src/main/res/drawable/ic_baseline_directions_bike_24.xml" value="0.312" />
+        <entry key="app/src/main/res/drawable/ic_baseline_help_24.xml" value="0.312" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.413852073535699" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.413852073535699" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.312" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.312" />
         <entry key="safenoisecanceling/src/main/res/layout/activity_main.xml" value="0.9580838323353293" />
+        <entry key="wearable/src/main/res/drawable/ic_baseline_directions_bike_24.xml" value="0.312" />
+        <entry key="wearable/src/main/res/drawable/ic_baseline_help_24.xml" value="0.312" />
+        <entry key="wearable/src/main/res/layout/activity_main.xml" value="0.813953488372093" />
       </map>
     </option>
   </component>
