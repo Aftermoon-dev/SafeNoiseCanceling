@@ -76,7 +76,15 @@
     <string name="setting_micthreshold">마이크 민감도 설정</string>
     <string name="setting_micthreshold_min">민감</string>
     <string name="setting_micthreshold_max">둔감</string>
+    <string name="setting_mediaoff">미디어 일시정지</string>
+    <string name="setting_mediaoff_description">위험이 감지되면 미디어 (노래, 영상 등) 재생을 일시정지합니다.</string>
     <string name="setting_author">해당 앱은 연구용으로, 실제 사용에 대한 모든 책임은 사용자에게 있습니다.\n가천대학교 소프트웨어학과 졸업작품 프로젝트\n5분반 7조 (김나형, 박다정, 선민재)\n2021.3 ~ 2022.6</string>
+
+    <string-array name="noti_type">
+        <item>진동 및 소리</item>
+        <item>소리</item>
+        <item>진동</item>
+    </string-array>
 
     <!-- Calibration -->
     <string name="calibration_title">마이크 보정</string>

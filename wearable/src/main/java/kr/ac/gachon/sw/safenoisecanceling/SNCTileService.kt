@@ -5,6 +5,7 @@ import androidx.wear.tiles.DimensionBuilders.dp
 import androidx.wear.tiles.DimensionBuilders.expand
 import androidx.wear.tiles.RequestBuilders.TileRequest
 import androidx.wear.tiles.RequestBuilders.ResourcesRequest
+import com.google.android.gms.wearable.DataClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel

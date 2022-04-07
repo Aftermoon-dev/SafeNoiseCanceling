@@ -97,12 +97,14 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
             viewBinding.swcEnableService.isChecked = Utils.checkPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) &&
                     ApplicationClass.SharedPreferences.isSNCEnable
         }
-        ApplicationClass.SharedPreferences.isSNCEnable = viewBinding.swcEnableService.isChecked
+
+        viewBinding.swcEnableMediaoff.isEnabled = viewBinding.swcEnableService.isChecked
 
         viewBinding.swcEnableService.setOnCheckedChangeListener { buttonView, isChecked ->
-            Log.d("MainActivity", "SNCService Switch Changed $isChecked")
+            Log.d(TAG, "SNCService Switch Changed $isChecked")
 
             ApplicationClass.SharedPreferences.isSNCEnable = isChecked
+            viewBinding.swcEnableMediaoff.isEnabled = isChecked
 
             if (isChecked) {
                 Intent(requireContext(), SoundClassificationService::class.java).also {
@@ -120,6 +122,14 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
             else {
                 requireContext().stopService(Intent(requireContext(), SoundClassificationService::class.java))
             }
+        }
+
+        // Media Enable Switch
+        viewBinding.swcEnableMediaoff.isChecked = ApplicationClass.SharedPreferences.enableMediaOff
+
+        viewBinding.swcEnableMediaoff.setOnCheckedChangeListener { buttonView, isChecked ->
+            Log.d(TAG, "Media Off Switch Changed $isChecked")
+            ApplicationClass.SharedPreferences.enableMediaOff = isChecked
         }
 
         // Classify Period

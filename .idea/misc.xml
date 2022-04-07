@@ -28,6 +28,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_help_24.xml" value="0.312" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.413852073535699" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.413852073535699" />
+        <entry key="app/src/main/res/layout/fragment_setting.xml" value="0.5" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.312" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.312" />
         <entry key="safenoisecanceling/src/main/res/layout/activity_main.xml" value="0.9580838323353293" />

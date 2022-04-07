@@ -163,7 +163,7 @@ class SoundClassificationService(): Service() {
         // PendingIntent 등록
         transitionRequest = ActivityTransitionRequest(transitionList)
         val transitionIntent = Intent(ApplicationClass.TRANSITIONS_RECEIVER_ACTION)
-        transitionPendingIntent = PendingIntent.getBroadcast(this, 0, transitionIntent, 0)
+        transitionPendingIntent = PendingIntent.getBroadcast(this, 0, transitionIntent, PendingIntent.FLAG_IMMUTABLE)
 
         // Transition Update 등록
         registerTransitionUpdate()
@@ -387,8 +387,10 @@ class SoundClassificationService(): Service() {
 
         // Notification Delay
         if(lastNotificationTime + 10000 <= System.currentTimeMillis()) {
-            // 노래 일시정지
-            Utils.pauseMediaPlay(applicationContext)
+            // 미디어 일시정지 활성화 상태라면 재생중인 미디어 일시중지 처리
+            if(ApplicationClass.SharedPreferences.enableMediaOff)
+                Utils.pauseMediaPlay(applicationContext)
+
             lastNotificationTime = System.currentTimeMillis()
             notificationManager.notify(1000, notiBuilder.build())
         }
@@ -406,7 +408,7 @@ class SoundClassificationService(): Service() {
                 .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
                 .putExtra(Settings.EXTRA_CHANNEL_ID, ApplicationClass.SC_SERVICE_CHANNEL_ID)
 
-            val pendingIntent = PendingIntent.getActivity(this, 0, notiSettingIntent, 0)
+            val pendingIntent = PendingIntent.getActivity(this, 0, notiSettingIntent, PendingIntent.FLAG_IMMUTABLE)
 
             val notiChannel = NotificationChannel(ApplicationClass.SC_SERVICE_CHANNEL_ID, getString(
                 R.string.soundservice_noti_channel), NotificationManager.IMPORTANCE_LOW)

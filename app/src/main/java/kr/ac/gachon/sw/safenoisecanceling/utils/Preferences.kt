@@ -38,4 +38,14 @@ class Preferences(context: Context) {
     var lastActivity: Int
         get() = preferences.getInt("lastActivity", DetectedActivity.STILL)
         set(value) = preferences.edit().putInt("lastActivity", value).apply()
+
+    // 미디어 일시정지 활성화
+    var enableMediaOff: Boolean
+        get() = preferences.getBoolean("enableMediaOff", true)
+        set(value) = preferences.edit().putBoolean("enableMediaOff", value).apply()
+
+    // 알림 Type
+    var notiType: Int
+        get() = preferences.getInt("notiType", 0)
+        set(value) = preferences.edit().putInt("notiType", value).apply()
 }
