@@ -3,6 +3,7 @@ package kr.ac.gachon.sw.safenoisecanceling.ui.setting
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
@@ -13,7 +14,6 @@ import kr.ac.gachon.sw.safenoisecanceling.databinding.FragmentSettingBinding
 import kr.ac.gachon.sw.safenoisecanceling.service.SoundClassificationService
 import kr.ac.gachon.sw.safenoisecanceling.ui.calibration.CalibrationActivity
 import kr.ac.gachon.sw.safenoisecanceling.utils.Utils
-import kotlin.math.round
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBinding::bind, R.layout.fragment_setting), SettingContract.View {
     private val TAG = "SettingFragment"
@@ -99,7 +99,6 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
         }
 
         viewBinding.swcEnableMediaoff.isEnabled = viewBinding.swcEnableService.isChecked
-
         viewBinding.swcEnableService.setOnCheckedChangeListener { buttonView, isChecked ->
             Log.d(TAG, "SNCService Switch Changed $isChecked")
 
@@ -122,6 +121,15 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
             else {
                 requireContext().stopService(Intent(requireContext(), SoundClassificationService::class.java))
             }
+        }
+
+        // Notification Setting
+        viewBinding.layoutNotisetting.setOnClickListener {
+            val settingsIntent: Intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+                .putExtra(Settings.EXTRA_CHANNEL_ID, ApplicationClass.SC_WARNING_CHANNEL_ID)
+            startActivity(settingsIntent)
         }
 
         // Media Enable Switch
