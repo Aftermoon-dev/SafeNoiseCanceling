@@ -8,6 +8,7 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.core.app.ActivityCompat
 import kr.ac.gachon.sw.safenoisecanceling.R
+import java.util.zip.DataFormatException
 import kotlin.math.log10
 
 object Utils {
@@ -127,5 +128,21 @@ object Utils {
                 0
             )
         )
+    }
+
+    /**
+     * 볼륨 설정하기
+     * @author Minjae Seon
+     * @param context Context
+     * @param newVolume New Volume (Integer)
+     */
+    fun setVolume(context: Context, newVolume: Int) {
+        val audioManager: AudioManager =
+            context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+        if (audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) >= newVolume)
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
+        else
+            throw DataFormatException("newVolume too big")
     }
 }
