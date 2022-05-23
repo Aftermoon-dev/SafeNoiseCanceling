@@ -374,6 +374,8 @@ class SoundClassificationService(): Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notiChannel = NotificationChannel(ApplicationClass.SC_WARNING_CHANNEL_ID, getString(R.string.soundservice_warning_channel), NotificationManager.IMPORTANCE_HIGH)
             notiChannel.setSound(sound, soundAttributes)
+            notiChannel.vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000)
+            notiChannel.enableVibration(true)
             notificationManager.createNotificationChannel(notiChannel)
         }
 
@@ -384,6 +386,7 @@ class SoundClassificationService(): Service() {
             .setSound(sound)
             .setStyle(NotificationCompat.BigTextStyle())
             .setContentIntent(pendingIntent)
+            .setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000))
 
         // Notification Delay
         if(lastNotificationTime + 10000 <= System.currentTimeMillis()) {
