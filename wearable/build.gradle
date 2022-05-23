@@ -21,6 +21,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    signingConfigs {
+        debug {
+            keyAlias 'snc_debug'
+            keyPassword 'snc_debug'
+            storeFile file('../keystore/debug.jks')
+            storePassword 'snc_debug'
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }

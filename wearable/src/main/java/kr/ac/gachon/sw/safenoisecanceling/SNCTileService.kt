@@ -1,11 +1,14 @@
 package kr.ac.gachon.sw.safenoisecanceling
 
+import android.util.Log
 import androidx.wear.tiles.*
 import androidx.wear.tiles.DimensionBuilders.dp
 import androidx.wear.tiles.DimensionBuilders.expand
 import androidx.wear.tiles.RequestBuilders.TileRequest
 import androidx.wear.tiles.RequestBuilders.ResourcesRequest
-import com.google.android.gms.wearable.DataClient
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.android.gms.wearable.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -19,9 +22,13 @@ private const val EVENT_OFF_BTN = "event_off"
 private const val BTN_SIZE = 150f
 
 class SNCTileService: TileService() {
+    private val key = "kr.ac.gachon.sw.safenoisecanceling.sncenable"
+    private lateinit var dataClient: DataClient
     private val serviceScope = CoroutineScope(Dispatchers.IO)
 
     override fun onTileRequest(requestParams: TileRequest) = serviceScope.future {
+        update(requestParams.state?.lastClickableId == EVENT_ON_BTN)
+
         TileBuilders.Tile.Builder()
             .setResourcesVersion(RESOURCES_VERSION)
             .setTimeline(
@@ -68,6 +75,11 @@ class SNCTileService: TileService() {
             .build()
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        dataClient = Wearable.getDataClient(this)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         serviceScope.cancel()
@@ -82,6 +94,7 @@ class SNCTileService: TileService() {
                     LayoutElementBuilders.Column.Builder()
                         .addContent(enableBtn())
                         .build()
+
                 }
                 else {
                     LayoutElementBuilders.Column.Builder()
@@ -122,4 +135,13 @@ class SNCTileService: TileService() {
                     )
                     .build()
             ).build()
+
+    private fun update(enable: Boolean) {
+        val putDataReq: PutDataRequest = PutDataMapRequest.create("/snc_enable").run {
+            dataMap.putBoolean(key, enable)
+            asPutDataRequest()
+        }
+        val putDataTask: Task<DataItem> = dataClient.putDataItem(putDataReq)
+        putDataTask.addOnSuccessListener { Log.d("TEST", "OK with ${it}") }
+    }
 }

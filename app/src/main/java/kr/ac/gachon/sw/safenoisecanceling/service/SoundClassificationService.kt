@@ -20,6 +20,7 @@ import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.DetectedActivity
+import com.google.android.gms.wearable.*
 import kr.ac.gachon.sw.safenoisecanceling.ApplicationClass
 import kr.ac.gachon.sw.safenoisecanceling.R
 import kr.ac.gachon.sw.safenoisecanceling.models.DatabaseModel
@@ -30,9 +31,11 @@ import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import kotlin.math.round
 import kotlin.math.roundToInt
 
-class SoundClassificationService(): Service() {
+class SoundClassificationService(): Service(), DataClient.OnDataChangedListener {
     // LOG Tag
     private val TAG: String = "SCService"
+
+    private val key = "kr.ac.gachon.sw.safenoisecanceling.sncenable"
 
     /** Sound Classification **/
     // 소리 인식할 카테고리 리스트
@@ -146,6 +149,7 @@ class SoundClassificationService(): Service() {
             stopSelf()
         }
 
+        Wearable.getDataClient(this).addListener(this)
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         Log.d(TAG, "Service Start!\nCurrent Base Decibel : ${ApplicationClass.SharedPreferences.baseMaxDecibel}")
@@ -186,6 +190,8 @@ class SoundClassificationService(): Service() {
 
         // 상태 변화 업데이트 해제
         unregisterTransitionUpdate()
+
+        Wearable.getDataClient(this).removeListener(this)
 
         // 캘리브레이션 값 업데이트
         if(isCalibration) {
@@ -247,6 +253,13 @@ class SoundClassificationService(): Service() {
         val run = object : Runnable {
             override fun run() {
                 if(!isCalibration && !ApplicationClass.SharedPreferences.isSNCEnable) return
+
+                // 웨어에서 비활성화 요청하면
+                if(!ApplicationClass.SharedPreferences.wearEnable) {
+                    // 반복만 하고 return
+                    handler.postDelayed(this, ApplicationClass.SharedPreferences.classifyPeriod)
+                    return
+                }
 
                 // Sound Buffer
                 val newData = FloatArray(record.channelCount * record.bufferSizeInFrames)
@@ -446,6 +459,22 @@ class SoundClassificationService(): Service() {
 
             notificationManager.createNotificationChannel(notiChannel)
             startForeground(1, notiBuilder.build())
+        }
+    }
+
+    override fun onDataChanged(dataEvents: DataEventBuffer) {
+        dataEvents.forEach { event ->
+            // DataItem changed
+            if (event.type == DataEvent.TYPE_CHANGED) {
+                event.dataItem.also { item ->
+                    if (item.uri.path?.compareTo("/snc_enable") == 0) {
+                        DataMapItem.fromDataItem(item).dataMap.apply {
+                            ApplicationClass.SharedPreferences.wearEnable = getBoolean(key)
+                            Log.d("TEST", "Changed ${ApplicationClass.SharedPreferences.wearEnable}")
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -63,6 +63,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'com.google.android.gms:play-services-wearable:17.1.0'
 
     // Test
     testImplementation 'junit:junit:4.+'

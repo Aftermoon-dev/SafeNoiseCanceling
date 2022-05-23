@@ -36,7 +36,16 @@
         <service
             android:name=".service.SoundClassificationService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false" >
+            <intent-filter>
+                <!-- listeners receive events that match the action and data filters -->
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/snc_enable"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".receiver.TransitionsReceiver"

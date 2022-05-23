@@ -54,6 +54,11 @@ class Preferences(context: Context) {
         get() = preferences.getInt("lastVolume", 50)
         set(value) = preferences.edit().putInt("lastVolume", value).apply()
 
+    // Wear Disable
+    var wearEnable: Boolean
+        get() = preferences.getBoolean("wearEnable", true)
+        set(value) = preferences.edit().putBoolean("wearEnable", value).apply()
+
     // 알림 Type
     var notiType: Int
         get() = preferences.getInt("notiType", 0)
