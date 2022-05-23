@@ -65,6 +65,8 @@
     <string name="setting_enable">서비스 활성화</string>
     <string name="setting_mediaoff">미디어 일시정지</string>
     <string name="setting_mediaoff_description">위험이 감지되면 미디어 (노래, 영상 등) 재생을 일시정지합니다.</string>
+    <string name="setting_subwaydetect">지하철 안내 방송 감지</string>
+    <string name="setting_subwaydetect_description">지하철 안내 방송이 감지되면 볼륨을 일시적으로 줄입니다.</string>
     <string name="setting_notisetting">알림 설정</string>
     <string name="setting_calibration">마이크 보정</string>
     <string name="setting_calibration_msg">정말 재보정을 하시겠습니까?\n보정하는 동안은 위험 소리 인식이 불가능하며, 무조건 보정을 완료해야 합니다!</string>

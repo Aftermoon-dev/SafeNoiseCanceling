@@ -14,4 +14,4 @@
 .cxx
 local.properties
 /keystore
-/app/src/main/ml
+/app/src/main/ml/yamnet.tflite

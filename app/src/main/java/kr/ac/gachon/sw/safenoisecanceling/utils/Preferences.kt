@@ -44,6 +44,16 @@ class Preferences(context: Context) {
         get() = preferences.getBoolean("enableMediaOff", true)
         set(value) = preferences.edit().putBoolean("enableMediaOff", value).apply()
 
+    // 지하철 안내 감지 활성화
+    var enableSubwayAnnounceDetect: Boolean
+        get() = preferences.getBoolean("enableSubwayAnnounceDetect", true)
+        set(value) = preferences.edit().putBoolean("enableSubwayAnnounceDetect", value).apply()
+
+    // 마지막 볼륨
+    var lastVolume: Int
+        get() = preferences.getInt("lastVolume", 50)
+        set(value) = preferences.edit().putInt("lastVolume", value).apply()
+
     // 알림 Type
     var notiType: Int
         get() = preferences.getInt("notiType", 0)

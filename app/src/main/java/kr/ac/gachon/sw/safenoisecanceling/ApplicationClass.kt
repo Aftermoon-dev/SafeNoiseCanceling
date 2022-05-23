@@ -11,7 +11,7 @@ class ApplicationClass: Application() {
         const val SC_SERVICE_CHANNEL_ID = "SNC_SoundService"
         const val SC_WARNING_CHANNEL_ID = "SNC_WARNING"
         const val TRANSITIONS_RECEIVER_ACTION = "SNC_TRANSITIONS"
-        const val YAMNET_MODEL_FILE = "yamnet.tflite"
+        const val YAMNET_MODEL_FILE = "metro.tflite"
 
         lateinit var roomDatabase: AppDatabase
         lateinit var SharedPreferences: Preferences

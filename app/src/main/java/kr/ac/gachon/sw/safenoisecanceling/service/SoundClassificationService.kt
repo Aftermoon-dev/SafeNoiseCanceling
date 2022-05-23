@@ -8,12 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.AudioRecord
 import android.net.Uri
-import android.os.Build
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.IBinder
+import android.os.*
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -316,6 +314,29 @@ class SoundClassificationService(): Service() {
 
                             if(category.index in checkCategories) {
                                 sendNotification()
+                            }
+                            else {
+                                // 지하철 감지 활성화인 경우
+                                if (ApplicationClass.SharedPreferences.enableSubwayAnnounceDetect) {
+                                    // 40% 이상 유사할 경우를 필터링
+                                    val subwayFilterOutput = output[1].categories.filter {
+                                        it.score > 0.4f
+                                    }.sortedBy {
+                                        -it.score
+                                    }
+
+                                    // 마지막 볼륨 가져와서 저장
+                                    val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                                    ApplicationClass.SharedPreferences.lastVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+
+                                    // 볼륨 반으로 줄임
+                                    Utils.setVolume(applicationContext, (ApplicationClass.SharedPreferences.lastVolume / 2))
+
+                                    // 8초후 볼륨 복귀
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        Utils.setVolume(applicationContext, (ApplicationClass.SharedPreferences.lastVolume))
+                                    }, 8000)
+                                }
                             }
 
                             // 데이터베이스에 인식 정보 쓰기

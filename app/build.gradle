@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'de.undercouch.download'
     id 'kotlin-kapt'
 }
 
@@ -52,10 +51,6 @@ android {
         noCompress 'tflite'
     }
 }
-
-// YAMNet Model Download
-project.ext.ASSET_DIR = projectDir.toString() + '/src/main/ml'
-apply from: 'download_model.gradle'
 
 dependencies {
     // Android & AndroidX Framework

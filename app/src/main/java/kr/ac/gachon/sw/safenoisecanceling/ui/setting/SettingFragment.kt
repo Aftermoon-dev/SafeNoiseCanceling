@@ -98,6 +98,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
                     ApplicationClass.SharedPreferences.isSNCEnable
         }
 
+        viewBinding.swcEnableSubway.isEnabled = viewBinding.swcEnableService.isChecked
         viewBinding.swcEnableMediaoff.isEnabled = viewBinding.swcEnableService.isChecked
         viewBinding.swcEnableService.setOnCheckedChangeListener { buttonView, isChecked ->
             Log.d(TAG, "SNCService Switch Changed $isChecked")
@@ -130,6 +131,14 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
                 .putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
                 .putExtra(Settings.EXTRA_CHANNEL_ID, ApplicationClass.SC_WARNING_CHANNEL_ID)
             startActivity(settingsIntent)
+        }
+
+        // Subway Detet Switch
+        viewBinding.swcEnableSubway.isChecked = ApplicationClass.SharedPreferences.enableSubwayAnnounceDetect
+
+        viewBinding.swcEnableSubway.setOnCheckedChangeListener { buttonView, isChecked ->
+            Log.d(TAG, "Subway Detect Switch Changed $isChecked")
+            ApplicationClass.SharedPreferences.enableMediaOff = isChecked
         }
 
         // Media Enable Switch
