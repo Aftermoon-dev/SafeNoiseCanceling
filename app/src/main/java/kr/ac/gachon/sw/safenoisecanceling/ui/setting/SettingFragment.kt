@@ -105,6 +105,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(FragmentSettingBind
 
             ApplicationClass.SharedPreferences.isSNCEnable = isChecked
             viewBinding.swcEnableMediaoff.isEnabled = isChecked
+            viewBinding.swcEnableSubway.isEnabled = isChecked
 
             if (isChecked) {
                 Intent(requireContext(), SoundClassificationService::class.java).also {
